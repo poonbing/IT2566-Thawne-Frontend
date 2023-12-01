@@ -1,0 +1,16 @@
+{
+  "name": "it2566-thawne-frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "electron main.js",
+    "start-dev": "electron-reload main.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^27.1.3"
+  }
+}
