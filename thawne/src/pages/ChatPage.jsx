@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import useToken from '../hooks/useToken';
-import API_CONFIG from '../config/api';
+import socketIOClient from 'socket.io-client';
 import ChatList from '../components/ChatList';
 import ChatView from '../components/ChatView';
 import VerifyChatModal from '../components/modals/VerifyChatModal';
@@ -23,21 +23,27 @@ function ChatPage({ handleChatSelect, selectedChat }) {
   };
 
   const handlePasswordSubmit = async (password) => {
+    const socket = socketIOClient('http://localhost:5000');
     try {
-      const response = await fetch(API_CONFIG.endpoints.verifyChatUser, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const data = await new Promise((resolve, reject) => {
+        socket.emit('verify_chat_user', {
           uid: token,
           cid: chatList[verifyChatModalIndex].chat_id,
           seclvl: chatList[verifyChatModalIndex].security_level,
           pass: password,
-        }),
-      }).then((response) => response.json());
+        });
+        socket.on('return_chat_user', (data) => {
+          socket.disconnect();
+          resolve(data);
+        });
+        socket.on('error_chat_user', (error) => {
+          socket.disconnect();
+          reject(error);
+        });
+      });
+      
 
-      if (response.success) {
+      if (data.success) {
         closeVerifyChatModal();
         const selectedChat = chatList[verifyChatModalIndex];
         handleChatSelect(selectedChat);

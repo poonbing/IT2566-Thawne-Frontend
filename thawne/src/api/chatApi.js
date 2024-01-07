@@ -1,104 +1,76 @@
-import API_CONFIG from '../config/api';
+import socketIOClient from 'socket.io-client';
 
 async function reflectAllChats(userId) {
-  try {
-    const response = await fetch(API_CONFIG.endpoints.getAllChat, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userId),
-    });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch chat list: ${response.status}`);
+  console.log(userId)
+  return new Promise((resolve, reject) => {
+    try {
+      const socket = socketIOClient('http://localhost:5000');
+      socket.emit('reflect_all_chats', userId);
+      socket.on('return_all_chats', (data) => {
+        socket.disconnect();
+        resolve(data);
+      });
+      socket.on('error_all_chats', (error) => {
+        socket.disconnect();
+        reject(new Error(`Failed to fetch chat list: ${error.message}`));
+      });
+    } catch (error) {
+      console.error('Error fetching chat list:', error.message);
+      reject(error);
     }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error fetching chat list:', error.message);
-    throw error;
-  }
+  });
 }
 
 async function createChat(chatValues) {
-  try {
-    const response = await fetch(API_CONFIG.endpoints.createChat, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(chatValues),
+  return new Promise((resolve, reject) => {
+    const socket = socketIOClient('http://localhost:5000');
+    socket.emit('create_chat', chatValues);
+    socket.on('return_chat_creation', (data) => {
+      socket.disconnect();
+      resolve(data);
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to create chat: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error creating chat:', error.message);
-    throw error;
-  }
+    socket.on('error_chat_creation', (error) => {
+      socket.disconnect();
+      reject(new Error(`Error creating chat: ${error.message}`));
+    });
+  });
 }
 
 async function submitMessage(content) {
-  try {
-    const response = await fetch(API_CONFIG.endpoints.submitMessage, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(content),
+  return new Promise((resolve, reject) => {
+    const socket = socketIOClient('http://localhost:5000');
+    socket.emit('submit_message', content);
+    socket.on('return_message_submission', (data) => {
+      socket.disconnect();
+      resolve(data);
     });
-
-    if (!response.ok) {
-      throw new Error(`Error sending message: ${response.status}`);
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error('Error sending message:', error.message);
-    throw error;
-  }
+    socket.on('error_message_submission', (error) => {
+      socket.disconnect();
+      reject(new Error(`Error sending message: ${error.message}`));
+    });
+  });
 }
 
 
-// async function getMessageList(currentChat) {
-//   try {
-//     const response = await fetch(API_CONFIG.endpoints.getTopMessages, {
-//       method: 'POST',
-//       headers: {
-//         'Content-Type': 'application/json',
-//       },
-//       body: JSON.stringify(currentChat),
-//     }).then((response) => response.json());
-//       console.log(response)
-//       if (response.success){
-//         console.log(response.message)
-//         return response.message
-//       }
-//       else{
-//         console.log(response)
-//       }
+async function getMessageList(currentChat) {
+  return new Promise((resolve, reject) => {
+    const socket = socketIOClient('http://localhost:5000');
+    socket.emit('get_message_list', currentChat);
+    socket.on('return_message_list', (data) => {
+      socket.disconnect();
+      if (data.success) {
+        console.log(data.message);
+        resolve(data.message);
+      } else {
+        console.error(data.error);
+        reject(new Error(`Failed to fetch message list: ${data.error}`));
+      }
+    });
+    socket.on('error_message_list', (error) => {
+      socket.disconnect();
+      reject(new Error(`Error fetching message list: ${error.message}`));
+    });
+  });
+}
 
-//     if (!response.ok) {
-//       throw new Error(`Failed to fetch message list: ${response.status}`);
-//     }
-//     else{
-//       console.log(response)
-//       return response.message
-//     }
-
-//     const data = await response.json();
-//     return data;
-//   } catch (error) {
-//     console.error('Error fetching message list:', error.message);
-//     throw error;
-//   }
-// }
-
-export { reflectAllChats, createChat, submitMessage };
+export { reflectAllChats, createChat, submitMessage, getMessageList };

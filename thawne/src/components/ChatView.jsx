@@ -3,7 +3,7 @@ import MessageList from './ChatView/MessageList';
 import MessageInput from './ChatView/MessageInput';
 import ChatDetails from './ChatDetails';
 import useToken from '../hooks/useToken';
-import API_CONFIG from '../config/api';
+import { getMessageList } from '../api/chatApi';
 
 function ChatView({ selectedChat, chatList, currentChatInfo, isDetailsOpen, setDetailsOpen }) {
   const [messages, setMessages] = useState([]);
@@ -17,29 +17,6 @@ function ChatView({ selectedChat, chatList, currentChatInfo, isDetailsOpen, setD
         userId: token,
         securityLevel: currentChatInfo.seclvl,
         pass: currentChatInfo.pass,
-      };
-
-      const getMessageList = async (currentChat) => {
-        try {
-          const response = await fetch(API_CONFIG.endpoints.getTopMessages, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(currentChat),
-          }).then((response) => response.json());
-
-          if (response.success) {
-            setMessages(response.message);
-          } else if (!response.success) {
-            setMessages([]);
-          } else if (!response.ok) {
-            throw new Error(`Failed to fetch message list: ${response.status}`);
-          }
-        } catch (error) {
-          console.error('Error fetching message list:', error.message);
-          throw error;
-        }
       };
 
       getMessageList(newMessages);

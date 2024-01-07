@@ -1,14 +1,17 @@
-import API_CONFIG from "../config/api";
+import socketIOClient from 'socket.io-client';
 
 async function loginUser(credentials) {
-    return fetch(API_CONFIG.endpoints.login, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(credentials)
-    })
-        .then(data => data.json());
-    }
-
+    return new Promise((resolve, reject) => {
+        const socket = socketIOClient('http://localhost:5000');
+        socket.emit('login', credentials);
+        socket.on('return_login', data => {
+            socket.disconnect();
+            resolve(data);
+        });
+        socket.on('error_login', error => {
+            socket.disconnect();
+            reject(error);
+        });
+    });
+}
 export { loginUser };
