@@ -58,13 +58,8 @@ async function getMessageList(currentChat) {
     socket.emit('get_message_list', currentChat);
     socket.on('return_message_list', (data) => {
       socket.disconnect();
-      if (data.success) {
-        console.log(data.message);
-        resolve(data.message);
-      } else {
-        console.error(data.error);
-        reject(new Error(`Failed to fetch message list: ${data.error}`));
-      }
+      resolve(data);
+
     });
     socket.on('error_message_list', (error) => {
       socket.disconnect();
