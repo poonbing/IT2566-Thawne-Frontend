@@ -1,17 +1,16 @@
-import React, { useState } from 'react';
-import useToken from '../hooks/useToken';
-import socketIOClient from 'socket.io-client';
-import ChatList from '../components/ChatList';
-import ChatView from '../components/ChatView';
-import VerifyChatModal from '../components/modals/VerifyChatModal';
+import React, { useState } from "react";
+import useToken from "../hooks/useToken";
+import useUserPassword from "../hooks/useUserPassword";
+import socketIOClient from "socket.io-client";
+import ChatList from "../components/ChatList";
+import ChatView from "../components/ChatView";
+import VerifyChatModal from "../components/modals/VerifyChatModal";
 
-function ChatPage({ handleChatSelect, selectedChat }) {
-  const [password, setPassword] = useState('');
+function ChatPage({ handleChatSelect, selectedChat, userPassword }) {
   const [currentChatInfo, setcurrentChatInfo] = useState({});
   const [chatList, setChatList] = useState([]);
   const [verifyChatModalIndex, setVerifyChatModalIndex] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
-  const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
 
   const openVerifyChatModal = (index) => {
@@ -23,25 +22,24 @@ function ChatPage({ handleChatSelect, selectedChat }) {
   };
 
   const handlePasswordSubmit = async (password) => {
-    const socket = socketIOClient('http://localhost:5000');
+    const socket = socketIOClient("http://localhost:5000");
     try {
       const data = await new Promise((resolve, reject) => {
-        socket.emit('verify_chat_user', {
+        socket.emit("verify_chat_user", {
           uid: token,
           cid: chatList[verifyChatModalIndex].chat_id,
           seclvl: chatList[verifyChatModalIndex].security_level,
           pass: password,
         });
-        socket.on('return_chat_user', (data) => {
+        socket.on("return_chat_user", (data) => {
           socket.disconnect();
           resolve(data);
         });
-        socket.on('error_chat_user', (error) => {
+        socket.on("error_chat_user", (error) => {
           socket.disconnect();
           reject(error);
         });
       });
-      
 
       if (data.success) {
         closeVerifyChatModal();
@@ -55,10 +53,10 @@ function ChatPage({ handleChatSelect, selectedChat }) {
           pass: password,
         });
       } else {
-        console.error('Incorrect password');
+        console.error("Incorrect password");
       }
     } catch (error) {
-      console.error('Error processing password submission:', error);
+      console.error("Error processing password submission:", error);
     }
   };
 
@@ -74,15 +72,13 @@ function ChatPage({ handleChatSelect, selectedChat }) {
             chatList={chatList}
             setChatList={setChatList}
             setcurrentChatInfo={setcurrentChatInfo}
+            userPassword={userPassword}
           />
         </div>
         <div className="container w-screen relative">
           <ChatView
             selectedChat={selectedChat}
-            chatList={chatList}
-            isDetailsOpen={isDetailsOpen}
             currentChatInfo={currentChatInfo}
-            setDetailsOpen={setDetailsOpen}
           />
         </div>
       </div>

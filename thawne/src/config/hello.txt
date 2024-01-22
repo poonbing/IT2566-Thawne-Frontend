@@ -1,0 +1,774 @@
+//pam_access
+
+accessfile=/path/to/access.conf
+
+    Indicate an alternative access.conf style configuration file to override the default. This can be useful when different services need different access lists. 
+debug
+    A lot of debug information is printed with syslog(3). 
+noaudit
+    Do not report logins from disallowed hosts and ttys to the audit subsystem. 
+fieldsep=separators
+    This option modifies the field separator character that will recognize when parsing the access configuration file. For example: fieldsep=| will cause the default ':' character to be treated as part of a field value and '|' becomes the field separator. Doing this may be useful in conjunction with a system that wants to use pam_access with X based applications, since the PAM_TTY item is likely to be of the form "hostname:0" which includes a ':' character in its value. But you should not need this. 
+listsep=separators
+    This option modifies the list separator character that will recognize when parsing the access configuration file. For example: listsep=, will cause the default ' ' (space) and '\t' (tab) characters to be treated as part of a list element value and ',' becomes the only list element separator. Doing this may be useful on a system with group information obtained from a Windows domain, where the default built-in groups "Domain Users", "Domain Admins" contain a space. 
+nodefgroup
+    User tokens which are not enclosed in parentheses will not be matched against the group database. The backwards compatible default is to try the group database match even for tokens not enclosed in parentheses. 
+
+
+//pam_debug
+
+       auth=value
+           The pam_sm_authenticate(3) function will return value.
+
+       cred=value
+           The pam_sm_setcred(3) function will return value.
+
+       acct=value
+           The pam_sm_acct_mgmt(3) function will return value.
+
+       prechauthtok=value
+           The pam_sm_chauthtok(3) function will return value if the
+           PAM_PRELIM_CHECK flag is set.
+
+       chauthtok=value
+           The pam_sm_chauthtok(3) function will return value if the
+           PAM_PRELIM_CHECK flag is not set.
+
+       open_session=value
+           The pam_sm_open_session(3) function will return value.
+
+       close_session=value
+           The pam_sm_close_session(3) function will return value.
+
+
+//pam_echo
+
+OPTIONS         top
+
+       file=/path/message
+           The content of the file /path/message will be printed with
+           the PAM conversion function as PAM_TEXT_INFO.
+
+
+//pam_env
+
+       conffile=/path/to/pam_env.conf
+           Indicate an alternative pam_env.conf style configuration file
+           to override the default. This can be useful when different
+           services need different environments.
+
+       debug
+           A lot of debug information is printed with syslog(3).
+
+       envfile=/path/to/environment
+           Indicate an alternative environment file to override the
+           default. The syntax are simple KEY=VAL pairs on separate
+           lines. The export instruction can be specified for bash
+           compatibility, but will be ignored. This can be useful when
+           different services need different environments.
+
+       readenv=0|1
+           Turns on or off the reading of the file specified by envfile
+           (0 is off, 1 is on). By default this option is on.
+
+       user_envfile=filename
+           Indicate an alternative .pam_environment file to override the
+           default.The syntax is the same as for
+           /etc/security/pam_env.conf. The filename is relative to the
+           user home directory. This can be useful when different
+           services need different environments.
+
+       user_readenv=0|1
+           Turns on or off the reading of the user specific environment
+           file. 0 is off, 1 is on. By default this option is off as
+           user supplied environment variables in the PAM environment
+           could affect behavior of subsequent modules in the stack
+           without the consent of the system administrator.
+
+           Due to problematic security this functionality is deprecated
+           since the 1.5.0 version and will be removed completely at
+           some point in the future.
+
+//pam_exec
+
+debug
+
+    Print debug information. 
+expose_authtok
+    During authentication the calling command can read the password from stdin(3). 
+log=file
+    The output of the command is appended to file 
+quiet
+    Per default pam_exec.so will echo the exit status of the external command if it fails. Specifying this option will suppress the message. 
+seteuid
+    Per default pam_exec.so will execute the external command with the real user ID of the calling process. Specifying this option means the command is run with the effective user ID. 
+
+//pam_faildelay
+
+debug
+
+    Turns on debugging messages sent to syslog. 
+delay=N
+    Set the delay on failure to N microseconds. 
+
+//pam_faillock
+
+{preauth|authfail|authsucc}
+
+    This argument must be set accordingly to the position of this module instance in the PAM stack.
+
+    The preauth argument must be used when the module is called before the modules which ask for the user credentials such as the password. The module just examines whether the user should be blocked from accessing the service in case there were anomalous number of failed consecutive authentication attempts recently. This call is optional if authsucc is used.
+
+    The authfail argument must be used when the module is called after the modules which determine the authentication outcome, failed. Unless the user is already blocked due to previous authentication failures, the module will record the failure into the appropriate user tally file.
+
+    The authsucc argument must be used when the module is called after the modules which determine the authentication outcome, succeded. Unless the user is already blocked due to previous authentication failures, the module will then clear the record of the failures in the respective user tally file. Otherwise it will return authentication error. If this call is not done, the pam_faillock will not distinguish between consecutive and non-consecutive failed authentication attempts. The preauth call must be used in such case. Due to complications in the way the PAM stack can be configured it is also possible to call pam_faillock as an account module. In such configuration the module must be also called in the preauth stage. 
+dir=/path/to/tally-directory
+    The directory where the user files with the failure records are kept. The default is /var/run/faillock. 
+audit
+    Will log the user name into the system log if the user is not found. 
+silent
+    Don't print informative messages. This option is implicite in the authfail and authsucc functions. 
+no_log_info
+    Don't log informative messages via syslog(3). 
+deny=n
+    Deny access if the number of consecutive authentication failures for this user during the recent interval exceeds n. The default is 3. 
+fail_interval=n
+    The length of the interval during which the consecutive authentication failures must happen for the user account lock out is n seconds. The default is 900 (15 minutes). 
+unlock_time=n
+    The access will be reenabled after n seconds after the lock out. The default is 600 (10 minutes). 
+even_deny_root
+    Root account can become locked as well as regular accounts. 
+root_unlock_time=n
+    This option implies even_deny_root option. Allow access after n seconds to root account after the account is locked. In case the option is not specified the value is the same as of the unlock_time option. 
+
+//pam_filter
+
+debug
+
+    Print debug information. 
+new_term
+    The default action of the filter is to set the PAM_TTY item to indicate the terminal that the user is using to connect to the application. This argument indicates that the filter should set PAM_TTY to the filtered pseudo-terminal. 
+non_term
+    don't try to set the PAM_TTY item. 
+runX
+    In order that the module can invoke a filter it should know when to invoke it. This argument is required to tell the filter when to do this.
+
+    Permitted values for X are 1 and 2. These indicate the precise time that the filter is to be run. To understand this concept it will be useful to have read the pam(3) manual page. Basically, for each management group there are up to two ways of calling the module's functions. In the case of the authentication and session components there are actually two separate functions. For the case of authentication, these functions are pam_authenticate(3) and pam_setcred(3), here run1 means run the filter from the pam_authenticate function and run2 means run the filter from pam_setcred. In the case of the session modules, run1 implies that the filter is invoked at the pam_open_session(3) stage, and run2 for pam_close_session(3).
+
+    For the case of the account component. Either run1 or run2 may be used.
+
+    For the case of the password component, run1 is used to indicate that the filter is run on the first occasion of pam_chauthtok(3) (the PAM_PRELIM_CHECK phase) and run2 is used to indicate that the filter is run on the second occasion (the PAM_UPDATE_AUTHTOK phase). 
+filter
+    The full pathname of the filter to be run and any command line arguments that the filter might expect. 
+
+//pam_ftp
+
+debug
+
+    Print debug information. 
+ignore
+    Pay no attention to the email address of the user (if supplied). 
+ftp=XXX,YYY,...
+    Instead of ftp or anonymous, provide anonymous login to the comma separated list of users: XXX,YYY,.... Should the applicant enter one of these usernames the returned username is set to the first in the list: XXX. 
+
+
+//pam_issue
+
+noesc
+
+    Turns off escape code parsing. 
+issue=issue-file-name
+    The file to output if not using the default. 
+
+//pam_keyinit
+
+       debug
+           Log debug information with syslog(3).
+
+       force
+           Causes the session keyring of the invoking process to be
+           replaced unconditionally.
+
+       revoke
+           Causes the session keyring of the invoking process to be
+           revoked when the invoking process exits if the session
+           keyring was created for this process in the first place.
+
+//pam_lastlog 
+
+debug
+
+    Print debug information. 
+silent
+    Don't inform the user about any previous login, just update the /var/log/lastlog file. 
+never
+    If the /var/log/lastlog file does not contain any old entries for the user, indicate that the user has never previously logged in with a welcome message. 
+nodate
+    Don't display the date of the last login. 
+noterm
+    Don't display the terminal name on which the last login was attempted. 
+nohost
+    Don't indicate from which host the last login was attempted. 
+nowtmp
+    Don't update the wtmp entry. 
+noupdate
+    Don't update any file. 
+showfailed
+    Display number of failed login attempts and the date of the last failed attempt from btmp. The date is not displayed when nodate is specified. 
+inactive=<days>
+    This option is specific for the auth or account phase. It specifies the number of days after the last login of the user when the user will be locked out by the module. The default value is 90. 
+
+       conf=/path/to/limits.conf
+           Indicate an alternative limits.conf style configuration file
+           to override the default.
+
+       debug
+           Print debug information.
+
+       set_all
+           Set the limits for which no value is specified in the
+           configuration file to the one from the process with the PID
+           1. Please note that if the init process is systemd these
+           limits will not be the kernel default limits and this option
+           should not be used.
+
+       utmp_early
+           Some broken applications actually allocate a utmp entry for
+           the user before the user is admitted to the system. If some
+           of the services you are configuring PAM for do this, you can
+           selectively use this module argument to compensate for this
+           behavior and at the same time maintain system-wide
+           consistency with a single limits.conf file.
+
+       noaudit
+           Do not report exceeded maximum logins count to the audit
+           subsystem.
+
+//pam_limits
+
+       conf=/path/to/limits.conf
+           Indicate an alternative limits.conf style configuration file
+           to override the default.
+
+       debug
+           Print debug information.
+
+       set_all
+           Set the limits for which no value is specified in the
+           configuration file to the one from the process with the PID
+           1. Please note that if the init process is systemd these
+           limits will not be the kernel default limits and this option
+           should not be used.
+
+       utmp_early
+           Some broken applications actually allocate a utmp entry for
+           the user before the user is admitted to the system. If some
+           of the services you are configuring PAM for do this, you can
+           selectively use this module argument to compensate for this
+           behavior and at the same time maintain system-wide
+           consistency with a single limits.conf file.
+
+       noaudit
+           Do not report exceeded maximum logins count to the audit
+           subsystem.
+
+//pam_listfile 
+
+item=[tty|user|rhost|ruser|group|shell]
+
+    What is listed in the file and should be checked for. 
+sense=[allow|deny]
+    Action to take if found in file, if the item is NOT found in the file, then the opposite action is requested. 
+file=/path/filename
+    File containing one item per line. The file needs to be a plain file and not world writable. 
+onerr=[succeed|fail]
+    What to do if something weird happens like being unable to open the file. 
+apply=[user|@group]
+    Restrict the user class for which the restriction apply. Note that with item=[user|ruser|group] this does not make sense, but for item=[tty|rhost|shell] it have a meaning. 
+quiet
+    Do not treat service refusals or missing list files as errors that need to be logged. 
+
+//pam_localfile
+
+debug
+
+    Print debug information. 
+file=/path/passwd
+    Use a file other than /etc/passwd. 
+
+//pam_loginuid
+
+require_auditd
+
+    This option, when given, will cause this module to query the audit daemon status and deny logins if it is not running. 
+
+
+//pam_mail
+
+       close
+           Indicate if the user has any mail also on logout.
+
+       debug
+           Print debug information.
+
+       dir=maildir
+           Look for the user's mail in an alternative location defined
+           by maildir/<login>. The default location for mail is
+           /var/mail/<login>. Note, if the supplied maildir is prefixed
+           by a '~', the directory is interpreted as indicating a file
+           in the user's home directory.
+
+       empty
+           Also print message if user has no mail.
+
+       hash=count
+           Mail directory hash depth. For example, a hashcount of 2
+           would make the mail file be /var/spool/mail/u/s/user.
+
+       noenv
+           Do not set the MAIL environment variable.
+
+       nopen
+           Don't print any mail information on login. This flag is
+           useful to get the MAIL environment variable set, but to not
+           display any information about it.
+
+       quiet
+           Only report when there is new mail.
+
+       standard
+           Old style "You have..." format which doesn't show the mail
+           spool being used. This also implies "empty".
+
+//pam_mkhomedir
+
+silent
+
+    Don't print informative messages. 
+umask=mask
+    The user file-creation mask is set to mask. The default value of mask is 0022. 
+skel=/path/to/skel/directory
+    Indicate an alternative skel directory to override the default /etc/skel. 
+
+
+//pam_motd
+
+motd=/path/filename
+
+    The /path/filename file is displayed as message of the day. 
+
+//pam_namespace
+
+       debug
+           A lot of debug information is logged using syslog
+
+       unmnt_remnt
+           For programs such as su and newrole, the login session has
+           already setup a polyinstantiated namespace. For these
+           programs, polyinstantiation is performed based on new user id
+           or security context, however the command first needs to undo
+           the polyinstantiation performed by login. This argument
+           instructs the command to first undo previous
+           polyinstantiation before proceeding with new
+           polyinstantiation based on new id/context
+
+       unmnt_only
+           For trusted programs that want to undo any existing bind
+           mounts and process instance directories on their own, this
+           argument allows them to unmount currently mounted instance
+           directories
+
+       require_selinux
+           If selinux is not enabled, return failure
+
+       gen_hash
+           Instead of using the security context string for the instance
+           name, generate and use its md5 hash.
+
+       ignore_config_error
+           If a line in the configuration file corresponding to a
+           polyinstantiated directory contains format error, skip that
+           line process the next line. Without this option, pam will
+           return an error to the calling program resulting in
+           termination of the session.
+
+       ignore_instance_parent_mode
+           Instance parent directories by default are expected to have
+           the restrictive mode of 000. Using this option, an
+           administrator can choose to ignore the mode of the instance
+           parent. This option should be used with caution as it will
+           reduce security and isolation goals of the polyinstantiation
+           mechanism.
+
+       unmount_on_close
+           Explicitly unmount the polyinstantiated directories instead
+           of relying on automatic namespace destruction after the last
+           process in a namespace exits. This option should be used only
+           in case it is ensured by other means that there cannot be any
+           processes running in the private namespace left after the
+           session close. It is also useful only in case there are
+           multiple pam session calls in sequence from the same process.
+
+       use_current_context
+           Useful for services which do not change the SELinux context
+           with setexeccon call. The module will use the current SELinux
+           context of the calling process for the level and context
+           polyinstantiation.
+
+       use_default_context
+           Useful for services which do not use pam_selinux for changing
+           the SELinux context with setexeccon call. The module will use
+           the default SELinux context of the user for the level and
+           context polyinstantiation.
+
+       mount_private
+           This option can be used on systems where the / mount point or
+           its submounts are made shared (for example with a mount
+           --make-rshared / command). The module will mark the whole
+           directory tree so any mount and unmount operations in the
+           polyinstantiation namespace are private. Normally the
+           pam_namespace will try to detect the shared / mount point and
+           make the polyinstantiated directories private automatically.
+           This option has to be used just when only a subtree is shared
+           and / is not.
+
+           Note that mounts and unmounts done in the private namespace
+           will not affect the parent namespace if this option is used
+           or when the shared / mount point is autodetected.
+
+
+//pam_nologin 
+
+       file=/path/nologin
+           Use this file instead the default /var/run/nologin or
+           /etc/nologin.
+
+       successok
+           Return PAM_SUCCESS if no file exists, the default is
+           PAM_IGNORE.
+
+
+//pam_pwhistory
+
+debug
+
+    Turns on debugging via syslog(3). 
+use_authtok
+    When password changing enforce the module to use the new password provided by a previously stacked password module (this is used in the example of the stacking of the pam_cracklib module documented below). 
+enforce_for_root
+    If this option is set, the check is enforced for root, too. 
+remember=N
+    The last N passwords for each user are saved in /etc/security/opasswd. The default is 10. 
+retry=N
+    Prompt user at most N times before returning with error. The default is 1. 
+authtok_type=STRING
+    See pam_get_authtok(3) for more details. 
+
+//pam_rhosts
+
+debug
+
+    Print debug information. 
+silent
+    Don't print informative messages. 
+superuser=account
+    Handle account as root. 
+
+/pam_rootok
+
+debug
+
+	Print debug information
+
+//pam_selinux
+
+       open
+           Only execute the open_session part of the module.
+
+       close
+           Only execute the close_session part of the module.
+
+       restore
+           In open_session part of the module, temporarily restore the
+           security contexts as they were before the previous call of
+           the module. Another call of this module without the restore
+           option will set up the new security contexts again.
+
+       nottys
+           Do not setup security context of the controlling terminal.
+
+       debug
+           Turn on debug messages via syslog(3).
+
+       verbose
+           Attempt to inform the user when security context is set.
+
+       select_context
+           Attempt to ask the user for a custom security context role.
+           If MLS is on, ask also for sensitivity level.
+
+       env_params
+           Attempt to obtain a custom security context role from PAM
+           environment. If MLS is on, obtain also sensitivity level.
+           This option and the select_context option are mutually
+           exclusive. The respective PAM environment variables are
+           SELINUX_ROLE_REQUESTED, SELINUX_LEVEL_REQUESTED, and
+           SELINUX_USE_CURRENT_RANGE. The first two variables are self
+           describing and the last one if set to 1 makes the PAM module
+           behave as if the use_current_range was specified on the
+           command line of the module.
+
+       use_current_range
+           Use the sensitivity level of the current process for the user
+           context instead of the default level. Also suppresses asking
+           of the sensitivity level from the user or obtaining it from
+           PAM environment.
+
+//pam_sepermit
+
+debug
+
+    Turns on debugging via syslog(3). 
+conf=/path/to/config/file
+    Path to alternative config file overriding the default. 
+
+//pam_setquota
+
+fs=/home
+
+    The device file or mountpoint the policy applies to. Defaults to the filesystem containing the users home directory.
+overwrite=0
+
+    Overwrite an existing quota. Note: Enabling this will remove the ability for the admin to manually configure different quotas for users for a filesystem with edquota(8). (Defaults to 0)
+debug=0
+
+    Enable debugging. A value of 1 outputs the old and new quota on a device. A value of 2 also prints out the matched and found filesystems should fs be unset. (Defaults to 0)
+startuid=1000
+
+    Describe the start of the UID range the policy is applied to. (Defaults to UID_MIN from login.defs or the uidmin value defined at compile-time if UID_MIN is undefined.)
+enduid=0
+
+    Describe the end of the UID range the policy is applied to. Setting enduid=0 results in an open-ended UID range (i.e. all uids greater than startuid are included). (Defaults to 0)
+bsoftlimit=19000
+
+    Soft limit for disk quota blocks, as defined by quotactl(2). Note: bsoftlimit and bhardlimit must be set at the same time!
+bhardlimit=20000
+
+    Hard limit for disk quota blocks, as defined by quotactl(2). Note: bsoftlimit and bhardlimit must be set at the same time!
+isoftlimit=3000
+
+    Soft limit for inodes, as defined by quotactl(2). Note: isoftlimit and ihardlimit must be set at the same time!
+ihardlimit=4000
+
+    Hard limit for inodes, as defined by quotactl(2). Note: isoftlimit and ihardlimit must be set at the same time!
+
+
+//pam_stress
+
+debug
+
+    Put lots of information in syslog. *NOTE* this option writes passwords to syslog, so don't use anything sensitive when testing.
+no_warn
+
+    Do not give warnings about things (otherwise warnings are issued via the conversation function)
+use_first_pass
+
+    Do not prompt for a password, for pam_sm_authentication function just use item PAM_AUTHTOK.
+try_first_pass
+
+    Do not prompt for a password unless there has been no previous authentication token (item PAM_AUTHTOK is NULL)
+rootok
+
+    This is intended for the pam_sm_chauthtok function and it instructs this function to permit root to change the user's password without entering the old password.
+expired
+
+    An argument intended for the account and chauthtok module parts. It instructs the module to act as if the user's password has expired
+fail_1
+
+    This instructs the module to make its first function fail.
+fail_2
+
+    This instructs the module to make its second function (if there is one) fail.
+prelim
+
+    For pam_sm_chauthtok, means fail on PAM_PRELIM_CHECK.
+required
+
+    For pam_sm_chauthtok, means fail if the user hasn't already been authenticated by this module. (See stress_new_pwd data string in the Notes.)
+
+
+//pam_succeed
+
+debug
+
+    Turns on debugging messages sent to syslog. 
+use_uid
+    Evaluate conditions using the account of the user whose UID the application is running under instead of the user being authenticated. 
+quiet
+    Don't log failure or success to the system log. 
+quiet_fail
+    Don't log failure to the system log. 
+quiet_success
+    Don't log success to the system log. 
+Conditions are three words: a field, a test, and a value to test for. 
+
+//pam_time
+
+debug
+
+    Some debug information is printed with syslog(3). 
+noaudit
+    Do not report logins at disallowed time to the audit subsystem. 
+
+//pam_timestamp
+
+timestamp_timeout=number
+
+    How long should pam_timestamp treat timestamp as valid after their last modification date (in seconds). Default is 300 seconds. 
+verbose
+    Attempt to inform the user when access is granted. 
+debug
+    Turns on debugging messages sent to syslog(3). 
+
+//pam_tty_audit
+
+disable=patterns
+
+    For each user matching one of comma-separated glob patterns, disable TTY auditing. This overrides any previous enable option matching the same user name on the command line. 
+enable=patterns
+    For each user matching one of comma-separated glob patterns, enable TTY auditing. This overrides any previous disable option matching the same user name on the command line. 
+open_only
+    Set the TTY audit flag when opening the session, but do not restore it when closing the session. Using this option is necessary for some services that don't fork() to run the authenticated session, such as sudo. 
+
+//pam_umask 
+
+       debug
+           Print debug information.
+
+       silent
+           Don't print informative messages.
+
+       usergroups
+           If the user is not root and the username is the same as
+           primary group name, the umask group bits are set to be the
+           same as owner bits (examples: 022 -> 002, 077 -> 007).
+
+       nousergroups
+           This is the direct opposite of the usergroups option
+           described above, which can be useful in case pam_umask has
+           been compiled with usergroups enabled by default and you want
+           to disable it at runtime.
+
+       umask=mask
+           Sets the calling process's file mode creation mask (umask) to
+           mask & 0777. The value is interpreted as Octal.
+
+//pam_unix
+
+debug
+
+    Turns on debugging via syslog(3). 
+audit
+    A little more extreme than debug. 
+nullok
+    The default action of this module is to not permit the user access to a service if their official password is blank. The nullok argument overrides this default. 
+try_first_pass
+    Before prompting the user for their password, the module first tries the previous stacked module's password in case that satisfies this module as well. 
+use_first_pass
+    The argument use_first_pass forces the module to use a previous stacked modules password and will never prompt the user - if no password is available or the password is not appropriate, the user will be denied access. 
+nodelay
+    This argument can be used to discourage the authentication component from requesting a delay should the authentication as a whole fail. The default action is for the module to request a delay-on-failure of the order of two second. 
+use_authtok
+    When password changing enforce the module to set the new password to the one provided by a previously stacked password module (this is used in the example of the stacking of the pam_cracklib module documented below). 
+not_set_pass
+    This argument is used to inform the module that it is not to pay attention to/make available the old or new passwords from/to other (stacked) password modules. 
+nis
+    NIS RPC is used for setting new passwords. 
+remember=n
+    The last n passwords for each user are saved in /etc/security/opasswd in order to force password change history and keep the user from alternating between the same password too frequently. 
+shadow
+    Try to maintain a shadow based system. 
+md5
+    When a user changes their password next, encrypt it with the MD5 algorithm. 
+bigcrypt
+    When a user changes their password next, encrypt it with the DEC C2 algorithm. 
+sha256
+    When a user changes their password next, encrypt it with the SHA256 algorithm. If the SHA256 algorithm is not known to the crypt(3) function, fall back to MD5. 
+sha512
+    When a user changes their password next, encrypt it with the SHA512 algorithm. If the SHA512 algorithm is not known to the crypt(3) function, fall back to MD5. 
+blowfish
+    When a user changes their password next, encrypt it with the blowfish algorithm. If the blowfish algorithm is not known to the crypt(3) function, fall back to MD5. 
+rounds=n
+    Set the optional number of rounds of the SHA256, SHA512 and blowfish password hashing algorithms to n. 
+broken_shadow
+    Ignore errors reading shadow information for users in the account management module. 
+Invalid arguments are logged with syslog(3). 
+
+
+//pam_userdb
+
+crypt=[crypt|none]
+
+    Indicates whether encrypted or plaintext passwords are stored in the database. If it is crypt, passwords should be stored in the database in crypt(3) form. If none is selected, passwords should be stored in the database as plaintext. 
+db=/path/database
+    Use the /path/database database for performing lookup. There is no default; the module will return PAM_IGNORE if no database is provided. 
+debug
+    Print debug information. 
+dump
+    Dump all the entries in the database to the log. Don't do this by default! 
+icase
+    Make the password verification to be case insensitive (ie when working with registration numbers and such). Only works with plaintext password storage. 
+try_first_pass
+    Use the authentication token previously obtained by another module that did the conversation with the application. If this token can not be obtained then the module will try to converse. This option can be used for stacking different modules that need to deal with the authentication tokens. 
+use_first_pass
+    Use the authentication token previously obtained by another module that did the conversation with the application. If this token can not be obtained then the module will fail. This option can be used for stacking different modules that need to deal with the authentication tokens. 
+unknown_ok
+    Do not return error when checking for a user that is not in the database. This can be used to stack more than one pam_userdb module that will check a username/password pair in more than a database. 
+key_only
+    The username and password are concatenated together in the database hash as 'username-password' with a random value. if the concatenation of the username and password with a dash in the middle returns any result, the user is valid. this is useful in cases where the username may not be unique but the username and password pair are. 
+
+//pam_usertype
+
+use_uid
+
+    Evaluate conditions using the account of the user whose UID the application is running under instead of the user being authenticated.
+audit
+
+    Log unknown users to the system log.
+
+Available conditions are:
+
+issystem
+
+    Succeed if the user is a system user.
+isregular
+
+    Succeed if the user is a regular user.
+
+//pam_wheel
+
+debug
+
+    Print debug information. 
+deny
+    Reverse the sense of the auth operation: if the user is trying to get UID 0 access and is a member of the wheel group (or the group of the group option), deny access. Conversely, if the user is not in the group, return PAM_IGNORE (unless trust was also specified, in which case we return PAM_SUCCESS). 
+group=name
+    Instead of checking the wheel or GID 0 groups, use the name group to perform the authentication. 
+root_only
+    The check for wheel membership is done only. 
+trust
+    The pam_wheel module will return PAM_SUCCESS instead of PAM_IGNORE if the user is a member of the wheel group (thus with a little play stacking the modules the wheel members may be able to su to root without being prompted for a passwd). 
+use_uid
+    The check for wheel membership will be done against the current uid instead of the original one (useful when jumping with su from one account to another for example). 
+
+//pam_xauth
+
+debug
+
+    Print debug information. 
+xauthpath=/path/to/xauth
+    Specify the path the xauth program (it is expected in /usr/X11R6/bin/xauth, /usr/bin/xauth, or /usr/bin/X11/xauth by default). 
+systemuser=UID
+    Specify the highest UID which will be assumed to belong to a "system" user. pam_xauth will refuse to forward credentials to users with UID less than or equal to this number, except for root and the "targetuser", if specified. 
+targetuser=UID
+    Specify a single target UID which is exempt from the systemuser check

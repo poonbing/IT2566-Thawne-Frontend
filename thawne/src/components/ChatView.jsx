@@ -5,14 +5,9 @@ import ChatDetails from "./ChatDetails";
 import useToken from "../hooks/useToken";
 import { getMessageList } from "../api/chatApi";
 
-function ChatView({
-  selectedChat,
-  chatList,
-  currentChatInfo,
-  isDetailsOpen,
-  setDetailsOpen,
-}) {
+function ChatView({ selectedChat, currentChatInfo }) {
   const [messages, setMessages] = useState([]);
+  const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
 
   useEffect(() => {
@@ -84,10 +79,7 @@ function ChatView({
           </div>
           <MessageList messages={messages} />
           <div className="bg-zinc-800">
-            <MessageInput
-              chatList={chatList}
-              currentChatInfo={currentChatInfo}
-            />
+            <MessageInput currentChatInfo={currentChatInfo} />
           </div>
         </div>
       ) : (

@@ -1,11 +1,16 @@
 import socketIOClient from 'socket.io-client';
 
-async function reflectAllChats(userId) {
-  console.log(userId)
+
+async function reflectAllChats(userId, password) {
+  console.log(password);
   return new Promise((resolve, reject) => {
     try {
       const socket = socketIOClient('http://localhost:5000');
-      socket.emit('reflect_all_chats', userId);
+      const chatData = {
+        userId: userId,
+        password: password,
+      };
+      socket.emit('reflect_all_chats', chatData);
       socket.on('return_all_chats', (data) => {
         socket.disconnect();
         resolve(data);
