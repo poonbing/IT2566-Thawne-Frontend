@@ -46,6 +46,8 @@ function ChatPage({ handleChatSelect, selectedChat }) {
           chat_id: chatList[verifyChatModalIndex].chat_id,
           userId: token,
           seclvl: chatList[verifyChatModalIndex].security_level,
+          // chatDescription: ChatList[verifyChatModalIndex].chat_description,
+          // chatCreator: ChatList[verifyChatModalIndex].chat_creator,
           pass: password,
         });
       } else {
@@ -68,6 +70,7 @@ function ChatPage({ handleChatSelect, selectedChat }) {
             chatList={chatList}
             setChatList={setChatList}
             setcurrentChatInfo={setcurrentChatInfo}
+            currentChatInfo={currentChatInfo}
           />
         </div>
         <div className="container w-screen relative">

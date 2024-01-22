@@ -6,7 +6,7 @@ import SearchBar from './ChatList/SearchBar';
 
 
 
-function ChatList({ chatList, setChatList, handleChatSelect, openVerifyChatModal, setActiveChat, activeChat, setcurrentChatInfo }) {
+function ChatList({ chatList, setChatList, handleChatSelect, openVerifyChatModal, setActiveChat, activeChat, setcurrentChatInfo, currentChatInfo }) {
   const { token } = useToken();
   const [password, setPassword] = useState('');
   const [isModalOpen, setModalOpen] = useState(false);
@@ -43,9 +43,12 @@ function ChatList({ chatList, setChatList, handleChatSelect, openVerifyChatModal
         chat_id : selectedChat.chat_id,
         userId: token,
         seclvl: securityLevel,
+        // chatDescription: selectedChat.chat_description,
+        // chatCreator: selectedChat.chat_creator,
         pass: false
       });
     }
+    console.log(currentChatInfo)
   };
   
 

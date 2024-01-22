@@ -82,7 +82,7 @@ function ChatView({ selectedChat, chatList, currentChatInfo, isDetailsOpen, setD
 
       {isDetailsOpen && (
         <ChatDetails
-          chatDetails={selectedChat}
+          chatDetails={currentChatInfo}
           onClose={() => setDetailsOpen(false)}
         />
       )}

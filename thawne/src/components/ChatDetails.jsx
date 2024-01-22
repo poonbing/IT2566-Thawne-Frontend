@@ -17,7 +17,7 @@ function ChatDetails({ chatDetails, onClose }) {
                 src="/images/default_pfp.png"
                 alt="username"
               />
-        <p className='italic mb-2 text-white'>Created by: Creator XX at XX/XX/XX </p>
+        <p className='italic mb-2 text-white'>Created by: {chatDetails.chatCreator} at XX/XX/XX </p>
 
     </div>
         <div className="flex-grow">
@@ -34,8 +34,8 @@ function ChatDetails({ chatDetails, onClose }) {
         <div class="mt-4 flex items-center sm:justify-end">
           <div class="flex flex-col gap-3 text-white italic">
             
-            <span className='mt-3 relative inline-flex cursor-pointer items-center'>No Hair</span>
-            <span className='mt-3 text-xs bg-red-600 text-white font-semibold p-1 rounded-md'>Top Secret</span>
+            <span className='mt-3 relative inline-flex cursor-pointer items-center'>{chatDetails.chat_id}</span>
+            <span className='mt-3 text-xs text-white font-semibold p-1 rounded-md'>{chatDetails.seclvl}</span>
 
 
           </div>
@@ -48,7 +48,7 @@ function ChatDetails({ chatDetails, onClose }) {
         <div className="flex-grow">
         <div className="overflow-y-auto text-white p-4">
             <div className="flex items-center">
-            <p className="mb-2">Chat Description: {chatDetails.description}</p>
+            <p className="mb-2">Chat Description: {chatDetails.chatDescription}</p>
             <button className="ml-auto text-white">
                 <ion-icon name="create-outline"></ion-icon>
             </button>
