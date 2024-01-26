@@ -6,7 +6,7 @@ import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
 
-function ChatPage({ handleChatSelect, selectedChat, userPassword }) {
+function ChatPage({ handleChatSelect, selectedChat }) {
   const [currentChatInfo, setcurrentChatInfo] = useState({});
   const [chatList, setChatList] = useState([]);
   const [verifyChatModalIndex, setVerifyChatModalIndex] = useState(null);
@@ -72,7 +72,6 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword }) {
             chatList={chatList}
             setChatList={setChatList}
             setcurrentChatInfo={setcurrentChatInfo}
-            userPassword={userPassword}
           />
         </div>
         <div className="container w-screen relative">

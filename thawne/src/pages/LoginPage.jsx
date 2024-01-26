@@ -4,7 +4,7 @@ import * as Yup from "yup";
 
 import { loginUser } from "../api/authApi";
 
-function Login({ setToken, setUserPassword }) {
+function Login({ setToken }) {
   const initialValues = {
     username: "",
     password: "",
@@ -17,10 +17,8 @@ function Login({ setToken, setUserPassword }) {
 
   const handleSubmit = async (values) => {
     const token = await loginUser(values);
+    console.log(token);
     setToken(token);
-    setUserPassword({
-      password: values.password,
-    });
   };
 
   return (

@@ -13,9 +13,8 @@ function ChatList({
   setActiveChat,
   activeChat,
   setcurrentChatInfo,
-  userPassword,
 }) {
-  const { token } = useToken();
+  const { token, userPassword } = useToken();
   const [password, setPassword] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -23,7 +22,7 @@ function ChatList({
 
   useEffect(() => {
     const fetchData = async () => {
-      const data = await reflectAllChats(token, userPassword.password);
+      const data = await reflectAllChats(token, userPassword);
       setChatList(data);
     };
 

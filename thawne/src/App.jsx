@@ -10,11 +10,9 @@ import DataSettings from "./pages/DataSettings";
 import LoginPage from "./pages/LoginPage";
 import NavBar from "./components/NavBar";
 import CreateChatModal from "./components/modals/CreateChatModal";
-import useUserPassword from "./hooks/useUserPassword";
 
 function App() {
   const [selectedChat, setSelectedChat] = useState(null);
-  const { userPassword, setUserPassword } = useUserPassword();
   const { token, setToken } = useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -45,7 +43,6 @@ function App() {
                       <ChatPage
                         handleChatSelect={handleChatSelect}
                         selectedChat={selectedChat}
-                        userPassword={userPassword}
                       />
                       {isModalOpen && (
                         <CreateChatModal closeModal={closeModal} />
@@ -91,15 +88,7 @@ function App() {
                 />
               </>
             ) : (
-              <Route
-                path="/"
-                element={
-                  <LoginPage
-                    setToken={setToken}
-                    setUserPassword={setUserPassword}
-                  />
-                }
-              />
+              <Route path="/" element={<LoginPage setToken={setToken} />} />
             )}
           </Routes>
         </Router>
