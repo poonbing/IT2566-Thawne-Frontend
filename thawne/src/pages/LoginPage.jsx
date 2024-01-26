@@ -18,10 +18,9 @@ function Login({ setToken, setUserPassword }) {
   const handleSubmit = async (values) => {
     const token = await loginUser(values);
     setToken(token);
-    setUserPassword((prevUserPassword) => ({
-      ...prevUserPassword,
+    setUserPassword({
       password: values.password,
-    }));
+    });
   };
 
   return (
