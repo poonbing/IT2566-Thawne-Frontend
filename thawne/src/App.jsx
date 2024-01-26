@@ -14,7 +14,7 @@ import useUserPassword from "./hooks/useUserPassword";
 
 function App() {
   const [selectedChat, setSelectedChat] = useState(null);
-  const { userPassword, setUserPassword } = useUserPassword();
+  const { setUserPassword } = useUserPassword();
   const { token, setToken } = useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -45,7 +45,6 @@ function App() {
                       <ChatPage
                         handleChatSelect={handleChatSelect}
                         selectedChat={selectedChat}
-                        userPassword={userPassword}
                       />
                       {isModalOpen && (
                         <CreateChatModal closeModal={closeModal} />

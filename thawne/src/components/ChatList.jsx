@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 
+import useUserPassword from "../hooks/useUserPassword";
 import useToken from "../hooks/useToken";
 import { reflectAllChats } from "../api/chatApi";
 import SearchBar from "./ChatList/SearchBar";
@@ -12,9 +13,9 @@ function ChatList({
   setActiveChat,
   activeChat,
   setcurrentChatInfo,
-  userPassword,
 }) {
   const { token } = useToken();
+  const { userPassword } = useUserPassword();
   const [password, setPassword] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
