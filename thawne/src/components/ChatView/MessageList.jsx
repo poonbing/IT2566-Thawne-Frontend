@@ -1,11 +1,19 @@
-import React, { useState } from 'react';
-import useToken from '../../hooks/useToken';
-import extractFirstKey from '../../helpers/extractFirstKey';
+import React, { useState } from "react";
+import useToken from "../../hooks/useToken";
+import extractFirstKey from "../../helpers/extractFirstKey";
 
 function MessageList({ messages }) {
-  const weekday = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]
-  const dateTrack = []
-  const todayDate = new Date()
+  const weekday = [
+    "Sunday",
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+  ];
+  const dateTrack = [];
+  const todayDate = new Date();
   const [dateStamp, setdateStamp] = useState(todayDate.getDate());
   const { token } = useToken();
 
@@ -19,31 +27,30 @@ function MessageList({ messages }) {
       console.log(messages)
       return null
     }
-  }
+  };
 
   const userMessage = (senderId) => {
-    if (senderId === token){
-      return true
+    if (senderId === token) {
+      return true;
+    } else {
+      return false;
     }
-    else{
-      return false
-    }
-  }
+  };
 
   const getTimeStamp = (date, utcOffset) => {
     const time = new Date(date);
-    
-    const adjustedTime = new Date(time.getTime() + (utcOffset * 60 * 60 * 1000));
-  
+
+    const adjustedTime = new Date(time.getTime() + utcOffset * 60 * 60 * 1000);
+
     let hour = adjustedTime.getHours() % 12;
     if (hour === 0) {
       hour = 12;
     }
-  
+
     const minute = ("0" + adjustedTime.getMinutes()).slice(-2);
-    const amPm = adjustedTime.getHours() >= 12 ? 'pm' : 'am';
-    const completeTime = hour + ':' + minute + ' ' + amPm;
-  
+    const amPm = adjustedTime.getHours() >= 12 ? "pm" : "am";
+    const completeTime = hour + ":" + minute + " " + amPm;
+
     return completeTime;
   };
 
@@ -55,53 +62,52 @@ function MessageList({ messages }) {
     const getMonth = date.getMonth();
     const getYear = date.getFullYear();
     const todayTime = todayDate.getTime();
-    const fullDate = getDate + '/' + getMonth + '/' + getYear
+    const fullDate = getDate + "/" + getMonth + "/" + getYear;
     let Difference_In_Time = todayTime - getTime;
-    let Difference_In_Days = Math.floor(Difference_In_Time / (1000 * 3600 * 24));
-    
-    if(dateTrack.includes(getDate)){
-      return null
+    let Difference_In_Days = Math.floor(
+      Difference_In_Time / (1000 * 3600 * 24)
+    );
+
+    if (dateTrack.includes(getDate)) {
+      return null;
     }
-    
-    if(getDate == dateStamp){
-      dateTrack.push(getDate)
+
+    if (getDate == dateStamp) {
+      dateTrack.push(getDate);
       return (
-      <div className="flex justify-center mb-2">
-        <div className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm italic">
-          Today
+        <div className="flex justify-center mb-2">
+          <div className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm italic">
+            Today
+          </div>
         </div>
-      </div>
-      )
-    }
-    else if (Difference_In_Days == 1) {
-      dateTrack.push(getDate)
+      );
+    } else if (Difference_In_Days == 1) {
+      dateTrack.push(getDate);
       return (
         <div className="flex justify-center mb-2">
           <div className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm italic">
             Yesterday
           </div>
         </div>
-      )
-    }
-    else if(Difference_In_Days < 7){
-      dateTrack.push(getDate)
+      );
+    } else if (Difference_In_Days < 7) {
+      dateTrack.push(getDate);
       return (
         <div className="flex justify-center mb-2">
           <div className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm italic">
             {weekday[date.getDay()]}
           </div>
         </div>
-        )
-    }
-    else{
-      dateTrack.push(getDate)
+      );
+    } else {
+      dateTrack.push(getDate);
       return (
         <div className="flex justify-center mb-2">
           <div className="bg-white text-gray-800 px-4 py-2 rounded-full text-sm italic">
             {fullDate}
           </div>
         </div>
-        )
+      );
     }
   }
 
