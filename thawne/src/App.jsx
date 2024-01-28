@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-
+import RotateLoader from "react-spinners/RotateLoader";
 import useToken from "./hooks/useToken";
 
 import ChatPage from "./pages/ChatPage";
@@ -17,6 +17,7 @@ function App() {
   const { userPassword, setUserPassword } = useUserPassword();
   const { token, setToken } = useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleChatSelect = (chat) => {
     setSelectedChat(chat);
@@ -30,8 +31,26 @@ function App() {
     setIsModalOpen(false);
   };
 
+  useEffect(() => {
+    setLoading(true)
+    setTimeout(() => {
+      setLoading(false)
+    }, 500)
+  }, [])
+
   return (
     <>
+    {loading ? (
+      <div className="h-screen w-full flex justify-center items-center">
+        <RotateLoader
+        color={"#FFFF00"}
+        loading={loading}
+        size={20}
+        aria-label="Loading Spinner"
+        data-testid="loader"
+        speedMultiplier={1}
+      /> 
+      </div>): (
       <div className="wrapper flex-1">
         <Router>
           <Routes>
@@ -46,6 +65,8 @@ function App() {
                         handleChatSelect={handleChatSelect}
                         selectedChat={selectedChat}
                         userPassword={userPassword}
+                        loading={loading}
+                        setLoading={setLoading}
                       />
                       {isModalOpen && (
                         <CreateChatModal closeModal={closeModal} />
@@ -97,6 +118,8 @@ function App() {
                   <LoginPage
                     setToken={setToken}
                     setUserPassword={setUserPassword}
+                    loading={loading}
+                    setLoading={setLoading}
                   />
                 }
               />
@@ -104,6 +127,7 @@ function App() {
           </Routes>
         </Router>
       </div>
+      )}
     </>
   );
 }
