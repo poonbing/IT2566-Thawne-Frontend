@@ -4,6 +4,7 @@ import useUserPassword from "../hooks/useUserPassword";
 import socketIOClient from "socket.io-client";
 import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
+import OpenCVComponent from "../components/OpenCV";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
 
 function ChatPage({ handleChatSelect, selectedChat }) {
@@ -73,6 +74,7 @@ function ChatPage({ handleChatSelect, selectedChat }) {
             setChatList={setChatList}
             setcurrentChatInfo={setcurrentChatInfo}
           />
+          <OpenCVComponent />
         </div>
         <div className="container w-screen relative">
           <ChatView
