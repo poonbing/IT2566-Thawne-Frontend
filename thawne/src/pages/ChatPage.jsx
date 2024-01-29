@@ -6,13 +6,15 @@ import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
 import OpenCVComponent from "../components/OpenCV";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
+import RotateLoader from "react-spinners/RotateLoader";
 
-function ChatPage({ handleChatSelect, selectedChat }) {
+function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLoading }) {
   const [currentChatInfo, setcurrentChatInfo] = useState({});
   const [chatList, setChatList] = useState([]);
   const [verifyChatModalIndex, setVerifyChatModalIndex] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
   const { token } = useToken();
+  const [unlock, setUnlock] = useState(false);
 
   const openVerifyChatModal = (index) => {
     setVerifyChatModalIndex(index);
@@ -23,6 +25,7 @@ function ChatPage({ handleChatSelect, selectedChat }) {
   };
 
   const handlePasswordSubmit = async (password) => {
+    setLoading(true)
     const socket = socketIOClient("http://localhost:5000");
     try {
       const data = await new Promise((resolve, reject) => {
@@ -43,6 +46,7 @@ function ChatPage({ handleChatSelect, selectedChat }) {
       });
 
       if (data.success) {
+        setUnlock(true)
         closeVerifyChatModal();
         const selectedChat = chatList[verifyChatModalIndex];
         handleChatSelect(selectedChat);
@@ -53,10 +57,13 @@ function ChatPage({ handleChatSelect, selectedChat }) {
           seclvl: chatList[verifyChatModalIndex].security_level,
           pass: password,
         });
+        setLoading(false)
       } else {
         console.error("Incorrect password");
+        setLoading(false)
       }
     } catch (error) {
+      setLoading(false)
       console.error("Error processing password submission:", error);
     }
   };
@@ -73,6 +80,10 @@ function ChatPage({ handleChatSelect, selectedChat }) {
             chatList={chatList}
             setChatList={setChatList}
             setcurrentChatInfo={setcurrentChatInfo}
+            userPassword={userPassword}
+            loading={loading}
+            setLoading={setLoading}
+            unlock={unlock}
           />
           <OpenCVComponent />
         </div>

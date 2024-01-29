@@ -5,7 +5,7 @@ async function reflectAllChats(userId, password) {
   console.log(password);
   return new Promise((resolve, reject) => {
     try {
-      const socket = socketIOClient('http://localhost:5000');
+      const socket = socketIOClient('http://localhost:5000/chat');
       const chatData = {
         userId: userId,
         password: password,
@@ -28,7 +28,7 @@ async function reflectAllChats(userId, password) {
 
 async function createChat(chatValues) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000');
+    const socket = socketIOClient('http://localhost:5000/operation');
     socket.emit('create_chat', chatValues);
     socket.on('return_chat_creation', (data) => {
       socket.disconnect();
@@ -43,7 +43,7 @@ async function createChat(chatValues) {
 
 async function submitMessage(content) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000');
+    const socket = socketIOClient('http://localhost:5000/chat');
     socket.emit('submit_message', content);
     socket.on('return_message_submission', (data) => {
       socket.disconnect();
@@ -59,7 +59,7 @@ async function submitMessage(content) {
 
 async function getMessageList(currentChat) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000');
+    const socket = socketIOClient('http://localhost:5000/chat');
     socket.emit('get_message_list', currentChat);
     socket.on('return_message_list', (data) => {
       socket.disconnect();
@@ -73,4 +73,38 @@ async function getMessageList(currentChat) {
   });
 }
 
-export { reflectAllChats, createChat, submitMessage, getMessageList };
+async function checkFileName(file) {
+  return new Promise((resolve, reject) => {
+    const socket = socketIOClient('http://localhost:5000');
+    socket.emit('check_filename', file);
+    socket.on('return_filename_check', (data) => {
+      socket.disconnect();
+      resolve(data);
+
+    });
+    socket.on('error_message_list', (error) => {
+      socket.disconnect();
+      reject(new Error(`Error fetching message list: ${error.message}`));
+    });
+  });
+}
+
+async function fileUpload(file) {
+  return new Promise((resolve, reject) => {
+    const socket = socketIOClient('http://localhost:5000/chat');
+    socket.emit('file_upload', file);
+    socket.on('return_filename_check', (data) => {
+      socket.disconnect();
+      resolve(data);
+
+    });
+    socket.on('error_message_list', (error) => {
+      socket.disconnect();
+      reject(new Error(`Error fetching message list: ${error.message}`));
+    });
+  });
+}
+
+
+
+export { reflectAllChats, createChat, submitMessage, getMessageList, fileUpload };

@@ -16,16 +16,16 @@ function MessageList({ messages }) {
   const todayDate = new Date();
   const [dateStamp, setdateStamp] = useState(todayDate.getDate());
   const { token } = useToken();
+
+  const messageList = Object.values(messages)
+
   const checkMessageList = (messages) => {
-    if (messages.length == 0) {
-      console.log(messages);
-      return (
-        <p className="text-white text-center">
-          Chat does not have any messages yet.
-        </p>
-      );
-    } else {
-      return null;
+    if (messages.length == 0){
+      return <p className='text-white text-center'>Chat does not have any messages yet.</p>
+    }
+    else{
+      console.log(messages)
+      return null
     }
   };
 
@@ -109,55 +109,46 @@ function MessageList({ messages }) {
         </div>
       );
     }
-  };
+  }
+
+  const checkMessageType = (message) => {
+    if (typeof message === 'string'){
+      return message
+    }
+    else{
+      console.log(Object.values(message))
+      return Object.values(message)[2] + ' (File)'
+    }
+  }
+
 
   return (
-    <div
-      className="relative w-full p-6 overflow-y-auto h-[40rem] "
-      style={{
-        backgroundImage: `url("/images/chatWallpaper.jpg")`,
-      }}
-    >
-      {checkMessageList(messages)}
+    <div className="relative w-full p-6 overflow-y-auto h-[40rem] " style={{ 
+      backgroundImage: `url("/images/chatWallpaper.jpg")`
+    }}>
+      {Array.isArray(messageList) ? (
+      <>
+      {checkMessageList(messageList)}
       <ul className="space-y-2">
-        {[...messages].reverse().map((message, index) => (
+        {messageList.map((message, index) => (
           <div>
             {getDateStamp(message.date)}
-            <li
-              key={index}
-              className={`flex justify-${
-                userMessage(extractFirstKey(message.sent_from))
-                  ? "end"
-                  : "start"
-              }`}
-            >
-              <div
-                className={`relative max-w-xl px-4 py-2 text-white ${
-                  userMessage(extractFirstKey(message.sent_from))
-                    ? "rounded bg-teal-800"
-                    : "rounded shadow bg-gray-700"
-                }`}
-              >
-                {userMessage(extractFirstKey(message.sent_from)) ? null : (
-                  <p className="text-xs font-semibold italic">
-                    {Object.values(message.sent_from)}
-                  </p>
-                )}
-                <div className="flex justify-between">
-                  {userMessage(extractFirstKey(message.sent_from)) ? (
-                    <span className="block">{message.content}</span>
-                  ) : (
-                    <span className="block">{message.content}</span>
-                  )}
-                  <span className="text-xs mt-2 ml-4">
-                    {getTimeStamp(message.date, 8)}
-                  </span>
+            <li key={index} className={`flex justify-${userMessage(extractFirstKey(message.sent_from)) ? 'end' : 'start'}`}>          
+              <div className={`relative max-w-xl px-4 py-2 text-white ${userMessage(extractFirstKey(message.sent_from)) ? 'rounded bg-teal-800' : 'rounded shadow bg-gray-700'}`}>
+                {userMessage(extractFirstKey(message.sent_from)) ? null : <p className='text-xs font-semibold italic'>{Object.values(message.sent_from)}</p>}
+                <div className='flex justify-between'>
+                  {userMessage(extractFirstKey(message.sent_from)) ? <span className="block">{checkMessageType(message.content)}</span> : <span className="block">{checkMessageType(message.content)}</span>}
+                  <span className='text-xs mt-2 ml-4'>{getTimeStamp(message.date, 8)}</span>
                 </div>
               </div>
             </li>
           </div>
         ))}
       </ul>
+      </>
+      ): (
+        <p className='text-white text-center'>Invalid or non-iterable messages.</p>
+      )}
     </div>
   );
 }

@@ -3,12 +3,15 @@ import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 
 import { loginUser } from "../api/authApi";
+import { useEffect} from "react";
 
-function Login({ setToken }) {
+function Login({ setToken, setUserPassword, loading, setLoading }) {
   const initialValues = {
     username: "",
     password: "",
   };
+
+
 
   const loginSchema = Yup.object({
     username: Yup.string().required("Staff code is required"),
@@ -16,9 +19,13 @@ function Login({ setToken }) {
   });
 
   const handleSubmit = async (values) => {
+    setLoading(true)
     const token = await loginUser(values);
-    console.log(token);
     setToken(token);
+    setUserPassword({
+      password: values.password,
+    });
+    setLoading(false)
   };
 
   return (
@@ -87,7 +94,9 @@ function Login({ setToken }) {
           </Form>
         </Formik>
       </div>
+       
     </div>
+    
   );
 }
 

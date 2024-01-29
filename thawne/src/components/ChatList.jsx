@@ -5,6 +5,7 @@ import useToken from "../hooks/useToken";
 import { reflectAllChats } from "../api/chatApi";
 import SearchBar from "./ChatList/SearchBar";
 
+
 function ChatList({
   chatList,
   setChatList,
@@ -13,19 +14,22 @@ function ChatList({
   setActiveChat,
   activeChat,
   setcurrentChatInfo,
+  userPassword,
+  unlock
 }) {
-  const { token, userPassword } = useToken();
+  const { token } = useToken();
   const [password, setPassword] = useState("");
   const [isModalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredChatList, setFilteredChatList] = useState(chatList);
 
   useEffect(() => {
+  
     const fetchData = async () => {
-      const data = await reflectAllChats(token, userPassword);
+      const data = await reflectAllChats(token, userPassword.password);
       setChatList(data);
+      
     };
-
     fetchData();
   }, [token, setChatList, userPassword]);
 
@@ -60,7 +64,8 @@ function ChatList({
             Top Secret
           </span>
           <span className="text-white ml-1">
-            <ion-icon name="lock-closed"></ion-icon>
+            {unlock ? (<ion-icon name="lock-open-outline"></ion-icon>): 
+            (<ion-icon name="lock-closed"></ion-icon>)}
           </span>
         </div>
       );

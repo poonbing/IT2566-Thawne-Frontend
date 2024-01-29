@@ -20,6 +20,9 @@ function ChatView({ selectedChat, currentChatInfo }) {
           pass: currentChatInfo.pass,
         };
 
+        console.log(currentChatInfo)
+        
+
         try {
           const hello = await getMessageList(newMessages);
           setMessages(hello);

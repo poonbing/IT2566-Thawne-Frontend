@@ -2,7 +2,7 @@ import socketIOClient from 'socket.io-client';
 
 async function loginUser(credentials) {
     return new Promise((resolve, reject) => {
-        const socket = socketIOClient('http://localhost:5000');
+        const socket = socketIOClient('http://localhost:5000/auth');
         socket.emit('login', credentials);
         socket.on('return_login', data => {
             socket.disconnect();
