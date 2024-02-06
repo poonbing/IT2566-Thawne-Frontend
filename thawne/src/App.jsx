@@ -15,7 +15,7 @@ import useUserPassword from "./hooks/useUserPassword";
 function App() {
   const [selectedChat, setSelectedChat] = useState(null);
   const { userPassword, setUserPassword } = useUserPassword();
-  const { token, setToken } = useToken();
+  const { token, setToken, logout } = useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [videoStream, setVideoStream] = useState(null);
@@ -33,11 +33,12 @@ function App() {
   };
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     setTimeout(() => {
-      setLoading(false)
-    }, 500)
-  }, [])
+      setLoading(false);
+    }, 500);
+    logout();
+  }, []);
 
   
 

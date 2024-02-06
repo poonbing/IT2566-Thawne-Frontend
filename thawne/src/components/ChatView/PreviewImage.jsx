@@ -1,27 +1,32 @@
-import React, { useState } from 'react'
+import defaultImage from "../../assets/png.png";
+import React, { useState, useEffect } from "react";
+import getFileFromUrl from "../../assets/png.png";
 
-export const PreviewImage = ({file}) => {
-    const [preview, setPreview] = useState(null);
-    const reader = new FileReader();
-    
+export const PreviewImage = ({ file }) => {
+  const [preview, setPreview] = useState(null);
 
-    if (file instanceof File) {
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            setPreview(reader.result)
+  useEffect(() => {
+    const loadPreview = async () => {
+      if (file instanceof Blob) {
+        if (file.type === "application/pdf") {
+          setPreview(defaultImage);
+        } else {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = () => {
+            setPreview(reader.result);
+          };
         }
-    }
-    else{
-        console.log(file)
-        console.log('File type', typeof file)
-        console.log('File prototype:', Object.getPrototypeOf(file));
-        console.log('Received file:', file instanceof File);
-        console.log('Incorrect Instance')
-    }
+      }
+    };
+
+    loadPreview();
+  }, [file]);
+
 
   return (
-    <div>
-        <img style={{width: "300px"}} src={preview} alt="" />
+    <div className="relative w-full p-8 h-[40rem] flex justify-center items-center">
+      <img className="max-w-full max-h-full" src={preview} alt="" />
     </div>
-  )
-}
+  );
+};
