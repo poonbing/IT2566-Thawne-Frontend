@@ -16,6 +16,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   const [editedvalues, setEditedValues] = useState(null);
   const [confirm, setConfirm] = useState(false);
   const fileInputRef = useRef(null);
+  const [fileSecurity, setFileSecurity] = useState("Open");
 
   const initialValues = {
     message: "",
@@ -40,6 +41,11 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       ),
   });
 
+  const handleFileSecurityChange = (event) => {
+    setFileSecurity(event.target.value); // Update fileSecurity state based on selected radio button
+  };
+
+
   const handleSendMessage = (values, { resetForm }) => {
     if (values.message.trim() !== "") {
       const editedvalues = {
@@ -47,19 +53,19 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         userId: currentChatInfo.userId,
         securityLevel: currentChatInfo.seclvl,
         chatPassword: currentChatInfo.pass,
-        fileSecurity: "Open",
+        fileSecurity: fileSecurity,
         fileName: values.file ? values.file.name : null,
         ...values,
       };
       let sensitiveList = textScanning(values.message);
-
+      console.log(currentChatInfo.seclvl)
+      console.log(values.file)
       if (sensitiveList.length > 0) {
         setShowModal(true);
         setSensitiveDataList(sensitiveList);
         setEditedValues(editedvalues);
-      } else if (currentChatInfo.seclvl == "Sensitive" && values.file == !"") {
+      } else if (currentChatInfo.seclvl == "Sensitive" && values.file) {
         setSecurityModal(true);
-        editedvalues.fileSecurity = values.fileSecurity;
         setEditedValues(editedvalues);
       } else {
         setEditedValues(editedvalues);
@@ -110,6 +116,8 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       setConfirm(false);
     }
   }, [editedvalues, confirm]);
+
+  
 
   return (
     <>
@@ -240,20 +248,28 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-md">
             <h2>Select file security</h2>
-            <input type="radio" name="fileSecurity" id="open" value={"Open"} />
+            <input 
+            type="radio" 
+            name="fileSecurity" 
+            id="open" 
+            value="Open"
+            checked={fileSecurity === "Open"} 
+            onChange={handleFileSecurityChange} 
+            />
             <label htmlFor="open">Open</label>
-            {currentChatInfo.seclvl === "Sensitive" ? (
-              <>
-                <input
-                  type="radio"
-                  name="fileSecurity"
-                  id="sensitive"
-                  value={"Sensitive"}
-                />
-                <label htmlFor="sensitive">Sensitive</label>
-              </>
-            ) : null}
-
+            
+            
+            <input
+              type="radio"
+              name="fileSecurity"
+              id="sensitive"
+              value="Sensitive"
+              checked={fileSecurity === "Sensitive"} 
+              onChange={handleFileSecurityChange} 
+              
+            />
+            <label htmlFor="sensitive">Sensitive</label>
+              
             <button
               type="button"
               onClick={() => {
@@ -267,6 +283,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
             <button
               type="button"
               onClick={() => {
+                setEditedValues(prevValues => ({...prevValues, fileSecurity: fileSecurity}));
                 setSecurityModal(false);
                 setConfirm(true);
               }}
