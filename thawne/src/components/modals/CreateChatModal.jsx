@@ -11,7 +11,7 @@ import { createChat } from '../../api/chatApi';
 
 
 
-function createChatModal({ closeModal }) {
+function createChatModal({ closeModal, userPassword }) {
   const { token } = useToken();
 
   const chatSchema = Yup.object({
@@ -41,6 +41,7 @@ function createChatModal({ closeModal }) {
             listOfUsers: [''],
             generalRead: true,
             generalWrite: true,
+            userPassword: userPassword.password
           }}
           validationSchema={chatSchema}
 

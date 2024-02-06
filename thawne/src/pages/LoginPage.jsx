@@ -1,7 +1,7 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-
+import OpenCVComponent from "../components/OpenCV";
 import { loginUser } from "../api/authApi";
 import { useEffect} from "react";
 
@@ -94,7 +94,7 @@ function Login({ setToken, setUserPassword, loading, setLoading }) {
           </Form>
         </Formik>
       </div>
-       
+       {/* <OpenCVComponent /> */}
     </div>
     
   );

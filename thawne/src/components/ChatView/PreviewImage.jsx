@@ -23,6 +23,7 @@ export const PreviewImage = ({ file }) => {
     loadPreview();
   }, [file]);
 
+
   return (
     <div className="relative w-full p-8 h-[40rem] flex justify-center items-center">
       <img className="max-w-full max-h-full" src={preview} alt="" />
