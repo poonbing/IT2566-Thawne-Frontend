@@ -4,11 +4,16 @@ import useUserPassword from "../hooks/useUserPassword";
 import socketIOClient from "socket.io-client";
 import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
-import OpenCVComponent from "../components/OpenCV";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
 import RotateLoader from "react-spinners/RotateLoader";
 
-function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLoading }) {
+function ChatPage({
+  handleChatSelect,
+  selectedChat,
+  userPassword,
+  loading,
+  setLoading,
+}) {
   const [currentChatInfo, setcurrentChatInfo] = useState({});
   const [chatList, setChatList] = useState([]);
   const [verifyChatModalIndex, setVerifyChatModalIndex] = useState(null);
@@ -23,7 +28,6 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
   const closeVerifyChatModal = () => {
     setVerifyChatModalIndex(null);
   };
-  
 
   const handlePasswordSubmit = async (password) => {
     

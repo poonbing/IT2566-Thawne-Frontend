@@ -7,16 +7,21 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <script src="src/helpers/openCvReady.js"></script>
-    <script async src="src/helpers/opencv.js" onload="openCvReady();"></script>
-    <script src="src/helpers/utils.js"></script>
+    <script async src="js/opencv.js" onload="openCvReady();"></script>
+    <script src="js/utils.js"></script>
     
   </head>
   <body class="bg-zinc-800">
     <div id="root" class="w-full flex-1">
     </div>
+    <div className="bg-white">
+      <video id="cam_input" hidden="True" height="240" width="320"></video>
+      <canvas id="canvas_output"></canvas>
+      <h1 id="statusText"></h1>
+    </div>
+
     <script type="module" src="/src/main.jsx"></script>
-    <!-- <script type="text/JavaScript">
+     <script type="text/JavaScript">
       function openCvReady() {
         cv['onRuntimeInitialized']=()=>{
           let video = document.getElementById("cam_input"); // video is the id of video tag
@@ -90,7 +95,7 @@
       setTimeout(processVideo, 0);
         };
       }
-    </script> -->
+    </script>
 
   </body>
 </html>
