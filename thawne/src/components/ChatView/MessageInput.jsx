@@ -26,7 +26,7 @@ function MessageInput({ currentChatInfo }) {
     message: Yup.string().required("Message is required"),
     file: Yup.mixed().required()
         .test("FILE_SIZE", "Too big!", (value) => value && value.size < 1024 * 1024)
-        .test("FILE_TYPE", "Invalid File Type!", (value) => value && ['image/png', 'image/jpeg'].includes(value.type))
+        .test("FILE_TYPE", "Invalid File Type!", (value) => value && ['image/png', 'image/jpeg', 'application.pdf'].includes(value.type))
     })
 
 
@@ -96,6 +96,7 @@ function MessageInput({ currentChatInfo }) {
   useEffect(() => {
     if (editedvalues && confirm) {
       fileUpload(editedvalues);
+
       setEditedValues(null);
       setConfirm(false);
     }
