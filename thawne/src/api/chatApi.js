@@ -64,6 +64,7 @@ async function getMessageList(currentChat) {
   return new Promise((resolve, reject) => {
     const socket = socketIOClient('http://localhost:5000/chat');
     socket.emit('get_message_list', currentChat);
+    
     socket.on('return_message_list', (data) => {
       socket.disconnect();
       resolve(data);

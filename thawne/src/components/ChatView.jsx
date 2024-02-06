@@ -5,7 +5,7 @@ import ChatDetails from "./ChatDetails";
 import useToken from "../hooks/useToken";
 import { getMessageList } from "../api/chatApi";
 
-function ChatView({ selectedChat, currentChatInfo }) {
+function ChatView({ activeChat, currentChatInfo, chatList }) {
   const [messages, setMessages] = useState([]);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
@@ -13,7 +13,8 @@ function ChatView({ selectedChat, currentChatInfo }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (selectedChat) {
+      if (typeof activeChat === "number" && activeChat !== null) {
+        console.log("This is the chatname", currentChatInfo);
         const newMessages = {
           chatId: currentChatInfo.chat_id,
           userId: token,
@@ -21,11 +22,9 @@ function ChatView({ selectedChat, currentChatInfo }) {
           pass: currentChatInfo.pass,
         };
 
-        console.log(currentChatInfo);
-
         try {
-          const hello = await getMessageList(newMessages);
-          setMessages(hello);
+          const data = await getMessageList(newMessages);
+          setMessages(data);
         } catch (error) {
           console.error(error);
         }
@@ -35,7 +34,7 @@ function ChatView({ selectedChat, currentChatInfo }) {
     };
 
     fetchData();
-  }, [selectedChat, isFileUploaded]);
+  }, [isFileUploaded, currentChatInfo, activeChat]);
 
   const checkSecurity = (level) => {
     if (level === "Top Secret") {
@@ -61,7 +60,7 @@ function ChatView({ selectedChat, currentChatInfo }) {
 
   return (
     <div className="lg:col-span-2 lg:block">
-      {selectedChat ? (
+      {typeof activeChat === "number" && activeChat !== null ? (
         <div
           className={`w-full h-3/4 ${isDetailsOpen ? "lg:w-2/3" : "lg:w-full"}`}
         >
@@ -75,10 +74,10 @@ function ChatView({ selectedChat, currentChatInfo }) {
               onClick={() => setDetailsOpen(!isDetailsOpen)}
               className="block ml-2 font-bold text-white hover:text-gray-400 transition-all ease-in-out duration-300 cursor-pointer"
             >
-              {selectedChat.chat_name}
+              {chatList[activeChat].chat_name}
             </span>
             <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
-            {checkSecurity(selectedChat.security_level)}
+            {checkSecurity(chatList[activeChat].security_level)}
           </div>
           {!isFileUploaded && <MessageList messages={messages} />}
           <div className="bg-zinc-800">
@@ -96,7 +95,7 @@ function ChatView({ selectedChat, currentChatInfo }) {
 
       {isDetailsOpen && (
         <ChatDetails
-          chatDetails={selectedChat}
+          chatDetails={activeChat}
           onClose={() => setDetailsOpen(false)}
         />
       )}

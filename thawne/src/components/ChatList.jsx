@@ -5,33 +5,28 @@ import useToken from "../hooks/useToken";
 import { reflectAllChats } from "../api/chatApi";
 import SearchBar from "./ChatList/SearchBar";
 
-
 function ChatList({
   chatList,
   setChatList,
-  handleChatSelect,
-  openVerifyChatModal,
   setActiveChat,
   activeChat,
   setcurrentChatInfo,
+  setIsModalOpen,
   userPassword,
-  unlock
+  unlock,
 }) {
   const { token } = useToken();
   const [password, setPassword] = useState("");
-  const [isModalOpen, setModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [filteredChatList, setFilteredChatList] = useState(chatList);
 
   useEffect(() => {
-  
     const fetchData = async () => {
       const data = await reflectAllChats(token, userPassword.password);
       setChatList(data);
-      
     };
     fetchData();
-  }, [token, setChatList, userPassword]);
+  }, [token, userPassword]);
 
   useEffect(() => {
     const filteredList = chatList.filter((chat) =>
@@ -41,12 +36,16 @@ function ChatList({
   }, [searchTerm, chatList]);
 
   const handleChatClick = async (index, securityLevel) => {
+    setActiveChat(index);
+    const selectedChat = chatList[index];
+
     if (securityLevel === "Top Secret" || securityLevel === "Sensitive") {
-      openVerifyChatModal(index);
+      setIsModalOpen(true);
+      console.log("This is secret");
+      console.log(selectedChat);
     } else {
-      const selectedChat = chatList[index];
-      handleChatSelect(selectedChat);
-      setActiveChat(index);
+      console.log("This is open");
+      console.log(selectedChat);
       setcurrentChatInfo({
         chat_id: selectedChat.chat_id,
         userId: token,
@@ -64,8 +63,11 @@ function ChatList({
             Top Secret
           </span>
           <span className="text-white ml-1">
-            {unlock ? (<ion-icon name="lock-open-outline"></ion-icon>): 
-            (<ion-icon name="lock-closed"></ion-icon>)}
+            {unlock ? (
+              <ion-icon name="lock-open-outline"></ion-icon>
+            ) : (
+              <ion-icon name="lock-closed"></ion-icon>
+            )}
           </span>
         </div>
       );
@@ -119,37 +121,6 @@ function ChatList({
           </div>
         ))}
       </div>
-
-      {isModalOpen && (
-        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <div className="bg-white p-6 rounded-md">
-            <h2 className="text-lg font-semibold mb-4 text-gray-700">
-              Enter Password
-            </h2>
-            <label className="text-gray-700 mb-2">Password:</label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="border border-gray-300 p-2 rounded-md mb-4"
-            />
-            <div className="flex justify-between">
-              <button
-                onClick={handlePasswordSubmit}
-                className="bg-blue-500 text-white px-4 py-2 rounded-md"
-              >
-                Submit
-              </button>
-              <button
-                onClick={() => setModalOpen(false)}
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }

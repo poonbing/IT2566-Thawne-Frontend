@@ -1,96 +1,82 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useToken from "../hooks/useToken";
-import useUserPassword from "../hooks/useUserPassword";
 import socketIOClient from "socket.io-client";
 import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
-import RotateLoader from "react-spinners/RotateLoader";
 
-function ChatPage({
-  handleChatSelect,
-  selectedChat,
-  userPassword,
-  loading,
-  setLoading,
-}) {
+function ChatPage({ userPassword, loading, setLoading }) {
   const [currentChatInfo, setcurrentChatInfo] = useState({});
   const [chatList, setChatList] = useState([]);
-  const [verifyChatModalIndex, setVerifyChatModalIndex] = useState(null);
   const [activeChat, setActiveChat] = useState(null);
   const { token } = useToken();
   const [unlock, setUnlock] = useState(false);
-
-  const openVerifyChatModal = (index) => {
-    setVerifyChatModalIndex(index);
-  };
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const closeVerifyChatModal = () => {
-    setVerifyChatModalIndex(null);
+    setIsModalOpen(false);
+    setActiveChat(null);
+    setcurrentChatInfo({});
   };
 
   const handlePasswordSubmit = async (password) => {
-    
-      return new Promise((resolve, reject) => {
-        const socket = socketIOClient("http://localhost:5000/auth");
-        socket.emit("verify_chat_user", {
-          uid: token,
-          cid: chatList[verifyChatModalIndex].chat_id,
-          seclvl: chatList[verifyChatModalIndex].security_level,
+    return new Promise((resolve, reject) => {
+      const socket = socketIOClient("http://localhost:5000/auth");
+      socket.emit("verify_chat_user", {
+        uid: token,
+        cid: chatList[activeChat].chat_id,
+        seclvl: chatList[activeChat].security_level,
+        pass: password,
+      });
+      socket.on("return_chat_user", (data) => {
+        socket.disconnect();
+        console.log(data);
+        setUnlock(true);
+        closeVerifyChatModal();
+        setActiveChat(activeChat);
+        setcurrentChatInfo({
+          chat_id: chatList[activeChat].chat_id,
+          userId: token,
+          seclvl: chatList[activeChat].security_level,
           pass: password,
         });
-        socket.on("return_chat_user", (data) => {
-          socket.disconnect();
-          console.log(data)
-          setUnlock(true)
-          closeVerifyChatModal();
-          const selectedChat = chatList[verifyChatModalIndex];
-          handleChatSelect(selectedChat);
-          setActiveChat(verifyChatModalIndex);
-          setcurrentChatInfo({
-            chat_id: chatList[verifyChatModalIndex].chat_id,
-            userId: token,
-            seclvl: chatList[verifyChatModalIndex].security_level,
-            pass: password,
-          });
-          resolve(data);
-        });
-        socket.on("error_chat_user", (error) => {
-          socket.disconnect();
-          console.log(error)
-          reject(error);
-        });
+        resolve(data);
       });
+      socket.on("error_chat_user", (error) => {
+        socket.disconnect();
+        console.log(error);
+        reject(error);
+      });
+    });
   };
+
+  useEffect(() => {}, [isModalOpen]);
 
   return (
     <>
       <div className="flex bg-zinc-800 h-full border-black">
         <div className="basis-2/6 overflow-auto">
           <ChatList
-            handleChatSelect={handleChatSelect}
-            openVerifyChatModal={openVerifyChatModal}
-            setActiveChat={setActiveChat}
-            activeChat={activeChat}
             chatList={chatList}
             setChatList={setChatList}
+            setActiveChat={setActiveChat}
+            activeChat={activeChat}
             setcurrentChatInfo={setcurrentChatInfo}
+            setIsModalOpen={setIsModalOpen}
             userPassword={userPassword}
-            loading={loading}
-            setLoading={setLoading}
             unlock={unlock}
           />
-          {/* <OpenCVComponent /> */}
         </div>
         <div className="container w-screen relative">
           <ChatView
-            selectedChat={selectedChat}
+            activeChat={activeChat}
             currentChatInfo={currentChatInfo}
+            chatList={chatList}
           />
         </div>
       </div>
 
-      {verifyChatModalIndex !== null && (
+      {isModalOpen && (
         <VerifyChatModal
           handlePasswordSubmit={handlePasswordSubmit}
           closeVerifyChatModal={closeVerifyChatModal}

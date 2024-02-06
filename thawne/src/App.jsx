@@ -14,16 +14,11 @@ import CreateChatModal from "./components/modals/CreateChatModal";
 import useUserPassword from "./hooks/useUserPassword";
 
 function App() {
-  const [selectedChat, setSelectedChat] = useState(null);
   const { userPassword, setUserPassword } = useUserPassword();
   const { token, setToken, logout } = useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [videoStream, setVideoStream] = useState(null);
-
-  const handleChatSelect = (chat) => {
-    setSelectedChat(chat);
-  };
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -66,8 +61,6 @@ function App() {
                       <>
                         <NavBar openModal={openModal} />
                         <ChatPage
-                          handleChatSelect={handleChatSelect}
-                          selectedChat={selectedChat}
                           userPassword={userPassword}
                           loading={loading}
                           setLoading={setLoading}
