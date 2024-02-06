@@ -3,8 +3,7 @@ import useToken from "../../hooks/useToken";
 import extractFirstKey from "../../helpers/extractFirstKey";
 
 function MessageList({ messages }) {
-
-  console.log(messages)
+  console.log(messages);
   const weekday = [
     "Sunday",
     "Monday",
@@ -21,15 +20,17 @@ function MessageList({ messages }) {
 
   const messageList = messages ? Object.values(messages) : [];
 
-
   const checkMessageList = (message) => {
-    if (messages.length < 1){
-      console.log(messages)
-      console.log('no messages')
-      return <p className='text-white text-center'>Chat does not have any messages yet.</p>
-    }
-    else{
-      return null
+    if (message.length < 1) {
+      console.log(messages);
+      console.log("no messages");
+      return (
+        <p className="text-white text-center">
+          Chat does not have any messages yet.
+        </p>
+      );
+    } else {
+      return null;
     }
   };
 
@@ -113,44 +114,71 @@ function MessageList({ messages }) {
         </div>
       );
     }
-  }
+  };
 
   const checkMessageType = (message) => {
-    console.log(message)
-    if (typeof message === 'string'){
-      return message
+    console.log(message);
+    if (typeof message === "string") {
+      return message;
+    } else {
+      return <img src={message.filename} alt="Image" />;
     }
-    else{
-      console.log(Object.values(message))
-      return Object.values(message)[2] + ' (File)'
-    }
-  }
-
+  };
 
   return (
-    <div className="relative w-full p-6 overflow-y-auto h-[40rem] " style={{ 
-      backgroundImage: `url("/images/chatWallpaper.jpg")`
-    }}>
+    <div
+      className="relative w-full p-6 overflow-y-auto h-[40rem] "
+      style={{
+        backgroundImage: `url("/images/chatWallpaper.jpg")`,
+      }}
+    >
       {checkMessageList(messageList)}
       {messageList.length > 0 && (
-      <>
-        <ul className="space-y-2">
-          {messageList.map((message, index) => (
-            <div>
-              {getDateStamp(message.date)}
-              <li key={index} className={`flex justify-${userMessage(extractFirstKey(message.sent_from)) ? 'end' : 'start'}`}>          
-                <div className={`relative max-w-xl px-4 py-2 text-white ${userMessage(extractFirstKey(message.sent_from)) ? 'rounded bg-teal-800' : 'rounded shadow bg-gray-700'}`}>
-                  {userMessage(extractFirstKey(message.sent_from)) ? null : <p className='text-xs font-semibold italic'>{Object.values(message.sent_from)}</p>}
-                  <div className='flex justify-between'>
-                    {userMessage(extractFirstKey(message.sent_from)) ? <span className="block">{checkMessageType(message.content)}</span> : <span className="block">{checkMessageType(message.content)}</span>}
-                    <span className='text-xs mt-2 ml-4'>{getTimeStamp(message.date, 8)}</span>
+        <>
+          <ul className="space-y-2">
+            {messageList.map((message, index) => (
+              <div>
+                {getDateStamp(message.date)}
+                <li
+                  key={index}
+                  className={`flex justify-${
+                    userMessage(extractFirstKey(message.sent_from))
+                      ? "end"
+                      : "start"
+                  }`}
+                >
+                  <div
+                    className={`relative max-w-xl px-4 py-2 text-white ${
+                      userMessage(extractFirstKey(message.sent_from))
+                        ? "rounded bg-teal-800"
+                        : "rounded shadow bg-gray-700"
+                    }`}
+                  >
+                    {userMessage(extractFirstKey(message.sent_from)) ? null : (
+                      <p className="text-xs font-semibold italic">
+                        {Object.values(message.sent_from)}
+                      </p>
+                    )}
+                    <div className="flex justify-between">
+                      {userMessage(extractFirstKey(message.sent_from)) ? (
+                        <span className="block">
+                          {checkMessageType(message.content)}
+                        </span>
+                      ) : (
+                        <span className="block">
+                          {checkMessageType(message.content)}
+                        </span>
+                      )}
+                      <span className="text-xs mt-2 ml-4">
+                        {getTimeStamp(message.date, 8)}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              </li>
-            </div>
-          ))}
-        </ul>
-      </>
+                </li>
+              </div>
+            ))}
+          </ul>
+        </>
       )}
     </div>
   );
