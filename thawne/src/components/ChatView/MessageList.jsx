@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import useToken from "../../hooks/useToken";
 import extractFirstKey from "../../helpers/extractFirstKey";
 
 function MessageList({ messages }) {
 
+  console.log(messages)
   const weekday = [
     "Sunday",
     "Monday",
@@ -17,22 +18,20 @@ function MessageList({ messages }) {
   const todayDate = new Date();
   const [dateStamp, setdateStamp] = useState(todayDate.getDate());
   const { token } = useToken();
-  const [messagePresent, setMessagePresent] = useState(null)
 
-  const messageList = Object.values(messages)
-  
-  const checkMessageList = (messages) => {
-    if (messages.length == 0){
-      setMessagePresent(false)
+  const messageList = messages ? Object.values(messages) : [];
+
+
+  const checkMessageList = (message) => {
+    if (messages.length < 1){
+      console.log(messages)
+      console.log('no messages')
+      return <p className='text-white text-center'>Chat does not have any messages yet.</p>
     }
     else{
-      setMessagePresent(true)
+      return null
     }
   };
-
-  useEffect(() => {
-    checkMessageList(messages)
-  }, [messagePresent]);
 
   const userMessage = (senderId) => {
     if (senderId === token) {
@@ -126,13 +125,14 @@ function MessageList({ messages }) {
       return Object.values(message)[2] + ' (File)'
     }
   }
-  
+
 
   return (
     <div className="relative w-full p-6 overflow-y-auto h-[40rem] " style={{ 
       backgroundImage: `url("/images/chatWallpaper.jpg")`
     }}>
-      {messagePresent ? (
+      {checkMessageList(messageList)}
+      {messageList.length > 0 && (
       <>
         <ul className="space-y-2">
           {messageList.map((message, index) => (
@@ -151,8 +151,6 @@ function MessageList({ messages }) {
           ))}
         </ul>
       </>
-      ): (
-        <p className='text-white text-center'>Chat does not have any messages yet.</p>
       )}
     </div>
   );

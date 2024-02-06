@@ -50,6 +50,7 @@ async function submitMessage(content) {
     socket.emit('submit_message', content);
     socket.on('return_message_submission', (data) => {
       socket.disconnect();
+      console.log(data)
       resolve(data);
     });
     socket.on('error_message_submission', (error) => {

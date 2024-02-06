@@ -67,6 +67,9 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       }
 
       resetForm();
+      if (fileInputRef.current) {
+        fileInputRef.current.value = null;
+      }
     }
   };
 
@@ -146,7 +149,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
               />
               
               {values.file ? (
-                <Tooltip title="Remove file" placement="top">
+                <Tooltip title="Remove" placement="top">
                   <button
                     className="text-white text-2xl ml-2 "
                     onClick={() => {

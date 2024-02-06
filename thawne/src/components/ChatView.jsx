@@ -10,6 +10,7 @@ function ChatView({ selectedChat, currentChatInfo }) {
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
   const [isFileUploaded, setIsFileUploaded] = useState(false);
+  const [messagePresent, setMessagePresent] = useState(null)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,6 +27,7 @@ function ChatView({ selectedChat, currentChatInfo }) {
         try {
           const hello = await getMessageList(newMessages);
           setMessages(hello);
+          setMessagePresent(true)
         } catch (error) {
           console.error(error);
         }
@@ -80,11 +82,12 @@ function ChatView({ selectedChat, currentChatInfo }) {
             <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
             {checkSecurity(selectedChat.security_level)}
           </div>
-          {!isFileUploaded && <MessageList messages={messages} />}
+          {!isFileUploaded && <MessageList messages={messages} messagePresent={messagePresent} setMessagePresent={setMessagePresent}/>}
           <div className="bg-zinc-800">
             <MessageInput
               currentChatInfo={currentChatInfo}
               setIsFileUploaded={setIsFileUploaded}
+    
             />
           </div>
         </div>
