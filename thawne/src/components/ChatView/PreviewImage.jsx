@@ -5,6 +5,8 @@ import getFileFromUrl from "../../assets/png.png";
 export const PreviewImage = ({ file }) => {
   const [preview, setPreview] = useState(null);
 
+  console.log(file);
+
   useEffect(() => {
     const loadPreview = async () => {
       if (file instanceof Blob) {
@@ -23,10 +25,15 @@ export const PreviewImage = ({ file }) => {
     loadPreview();
   }, [file]);
 
-
   return (
-    <div className="relative w-full p-8 h-[40rem] flex justify-center items-center">
-      <img className="max-w-full max-h-full" src={preview} alt="" />
+    <div className="relative w-full p-8 h-[40rem] flex flex-col justify-center items-center">
+      <div className="mb-20 text-white font-medium text-lg">
+        <p>{file.name}</p>
+      </div>
+      <img className="max-w-full max-h-full mt-20 mb-10" src={preview} alt="" />
+      <div className="m-4">
+        <p className="text-white font-light">Size: {file.size}B</p>
+      </div>
     </div>
   );
 };
