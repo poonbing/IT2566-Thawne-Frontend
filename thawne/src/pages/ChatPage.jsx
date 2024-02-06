@@ -23,6 +23,7 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
   const closeVerifyChatModal = () => {
     setVerifyChatModalIndex(null);
   };
+  
 
   const handlePasswordSubmit = async (password) => {
     setLoading(true)
@@ -85,7 +86,7 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
             setLoading={setLoading}
             unlock={unlock}
           />
-          <OpenCVComponent />
+          {/* <OpenCVComponent /> */}
         </div>
         <div className="container w-screen relative">
           <ChatView

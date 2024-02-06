@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import RotateLoader from "react-spinners/RotateLoader";
+import ClimbingBoxLoader from "react-spinners/ClimbingBoxLoader";
 import useToken from "./hooks/useToken";
 
 import ChatPage from "./pages/ChatPage";
@@ -18,6 +18,7 @@ function App() {
   const { token, setToken } = useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [videoStream, setVideoStream] = useState(null);
 
   const handleChatSelect = (chat) => {
     setSelectedChat(chat);
@@ -38,11 +39,13 @@ function App() {
     }, 500)
   }, [])
 
+  
+
   return (
     <>
     {loading ? (
       <div className="h-screen w-full flex justify-center items-center">
-        <RotateLoader
+        <ClimbingBoxLoader
         color={"#FFFF00"}
         loading={loading}
         size={20}
@@ -69,7 +72,7 @@ function App() {
                         setLoading={setLoading}
                       />
                       {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
+                        <CreateChatModal closeModal={closeModal} userPassword={userPassword} />
                       )}
                     </>
                   }
@@ -81,7 +84,7 @@ function App() {
                       <NavBar openModal={openModal} />
                       <ProfileSettings />
                       {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
+                        <CreateChatModal closeModal={closeModal} userPassword={userPassword}/>
                       )}
                     </>
                   }

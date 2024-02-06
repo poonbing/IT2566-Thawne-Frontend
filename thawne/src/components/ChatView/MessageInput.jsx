@@ -10,10 +10,12 @@ import axios from "axios";
 function MessageInput({ currentChatInfo }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  const [showSecurityModal, setSecurityModal] = useState(false);
   const [sensitiveDataList, setSensitiveDataList] = useState([]);
   const [editedvalues, setEditedValues] = useState(null);
   const [confirm, setConfirm] = useState(false);
   const fileInputRef = useRef(null);
+
 
   const initialValues = {
     message: "",
@@ -28,8 +30,6 @@ function MessageInput({ currentChatInfo }) {
     })
 
 
-    
-
   const handleSendMessage = (values, { resetForm }) => {
     console.log(values)
     if (values.message.trim() !== "") {
@@ -41,7 +41,6 @@ function MessageInput({ currentChatInfo }) {
         fileSecurity: 'Open',
         fileName: values.file.name,
         ...values,
-
       };
       console.log(editedvalues)
       let sensitiveList = textScanning(values.message);
@@ -51,7 +50,11 @@ function MessageInput({ currentChatInfo }) {
         setSensitiveDataList(sensitiveList);
         setEditedValues(editedvalues);
       }
-  
+      else if (currentChatInfo.seclvl == "Sensitive" && values.file == !""){
+        setSecurityModal(true)
+        editedvalues.fileSecurity = values.fileSecurity;
+        setEditedValues(editedvalues)
+      }
       else {
         setEditedValues(editedvalues);
         setConfirm(true);
@@ -201,6 +204,48 @@ function MessageInput({ currentChatInfo }) {
           </div>
         </div>
       )}
+      {showSecurityModal && (
+  
+          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
+            <div className="bg-white p-6 rounded-md">
+              <h2>Select file security</h2>
+              <input type="radio" name="fileSecurity" id="open" value={"Open"} />
+              <label htmlFor="open">Open</label>
+              {currentChatInfo.seclvl === "Sensitive" ? (
+                <>
+                  <input type="radio" name="fileSecurity" id="sensitive" value={"Sensitive"} />
+                  <label htmlFor="sensitive">Sensitive</label>
+                </>
+              ):(
+                  null
+              )
+              }
+              
+
+              <button
+                type="button"
+                onClick={() => {
+                  setSecurityModal(false);
+                }}
+                className="bg-red-500 text-white px-4 py-2 rounded-md"
+              >
+                Cancel
+              </button>
+
+              <button type="button" onClick={() => {
+                  setSecurityModal(false);
+                  setConfirm(true);
+                }} className="bg-green-500 text-white px-4 py-2 rounded-md">
+                  Send
+              </button>
+  
+
+            </div>
+          </div>
+
+      )}
+
+
     </>
   );
 }

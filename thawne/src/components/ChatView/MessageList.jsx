@@ -24,7 +24,6 @@ function MessageList({ messages }) {
       return <p className='text-white text-center'>Chat does not have any messages yet.</p>
     }
     else{
-      console.log(messages)
       return null
     }
   };

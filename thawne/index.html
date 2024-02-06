@@ -16,7 +16,7 @@
     <div id="root" class="w-full flex-1">
     </div>
     <script type="module" src="/src/main.jsx"></script>
-    <script type="text/JavaScript">
+    <!-- <script type="text/JavaScript">
       function openCvReady() {
         cv['onRuntimeInitialized']=()=>{
           let video = document.getElementById("cam_input"); // video is the id of video tag
@@ -24,10 +24,12 @@
           .then(function(stream) {
               video.srcObject = stream;
               video.play();
+              console.log('camera is on')
           })
           .catch(function(err) {
               console.log("An error occurred! " + err);
           });
+          console.log('camera is off')
           let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
           let dst = new cv.Mat(video.height, video.width, cv.CV_8UC1);
           let gray = new cv.Mat();
@@ -88,7 +90,7 @@
       setTimeout(processVideo, 0);
         };
       }
-    </script>
+    </script> -->
 
   </body>
 </html>
