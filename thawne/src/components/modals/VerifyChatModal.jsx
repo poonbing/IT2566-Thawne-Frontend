@@ -10,7 +10,7 @@ function VerifyChatModal({ handlePasswordSubmit, closeVerifyChatModal }) {
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
       <div className="bg-white p-6 rounded-md">
-        <h2 className="text-lg font-semibold mb-4 text-gray-700">Enter Password</h2>
+        <h2 className="text-lg font-semibold mb-4 text-gray-700">Enter Chat Password</h2>
         <Formik
           initialValues={{
             password: '',
@@ -25,9 +25,7 @@ function VerifyChatModal({ handlePasswordSubmit, closeVerifyChatModal }) {
           {({ errors, touched, values }) => (
             <Form className="space-y-4">
               <div className="flex flex-col">
-                <label htmlFor="password" className="text-gray-700 mb-2">
-                  Password:
-                </label>
+                
                 <Field
                   type="password"
                   name="password"
@@ -40,13 +38,13 @@ function VerifyChatModal({ handlePasswordSubmit, closeVerifyChatModal }) {
               <div className="flex justify-between">
                 <button
                   type="submit"
-                  className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-all ease-in-out duration-300"
+                  className="bg-gray-700 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-all ease-in-out duration-300"
                 >
                   Submit
                 </button>
                 <button
                   onClick={closeVerifyChatModal}
-                  className="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-all ease-in-out duration-300"
+                  className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-all ease-in-out duration-300"
                 >
                   Close
                 </button>

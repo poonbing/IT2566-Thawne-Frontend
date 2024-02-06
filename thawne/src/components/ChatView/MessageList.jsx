@@ -23,7 +23,7 @@ function MessageList({ messages }) {
 
 
   const checkMessageList = (message) => {
-    if (message.length < 1){
+    if (messages.length < 1){
       console.log(messages)
       console.log('no messages')
       return <p className='text-white text-center'>Chat does not have any messages yet.</p>

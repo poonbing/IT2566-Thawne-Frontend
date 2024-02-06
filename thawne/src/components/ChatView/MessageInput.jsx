@@ -142,8 +142,11 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 <EmojiPicker onEmojiClick={handleEmojiClick} autoFocusSearch />
               )}
               <label htmlFor="file" className="text-white text-2xl cursor-pointer">
-                <ion-icon name="document-outline"></ion-icon>
+                  <Tooltip title="Upload file" placement="top">
+                    <ion-icon name="document-outline"></ion-icon>
+                  </Tooltip>
               </label>
+              
               <input
                 type="file"
                 name="file"
@@ -157,7 +160,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
               />
               
               {values.file ? (
-                <Tooltip title="Remove" placement="top">
+                <Tooltip title="Remove file" placement="top">
                   <button
                     className="text-white text-2xl ml-2 "
                     onClick={() => {
