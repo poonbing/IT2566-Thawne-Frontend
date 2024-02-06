@@ -101,9 +101,24 @@ async function fileUpload(file) {
       socket.disconnect();
       reject(new Error(`Error with file upload: ${error.message}`));
     });
+    socket.on('return_file_upload', (message) => {
+      socket.disconnect();
+      alert(` Signed URL. \n Details: ${message.url}`)
+      console.log(message.url)
+      const uploadResponse = fetch(message.url, {
+        method: 'PUT',
+        body: file.file
+      });
+      if (uploadResponse.ok) {
+        console.log('File uploaded successfully!');
+      } else {
+        console.error('Error uploading file:', uploadResponse.statusText);
+      }
+    });
+    
     socket.on('inappropriate_level', (error) => {
       socket.disconnect();
-      alert(`File upload is not allowed. Granted security level: ${error}`)
+      alert(` File upload is not allowed. \n Granted security level: ${error}`)
     });
   });
 }

@@ -5,6 +5,7 @@ import { Formik, Form, Field, useFormik } from "formik";
 import { submitMessage } from "../../api/chatApi";
 import { fileUpload } from "../../api/chatApi";
 import { PreviewImage } from "./PreviewImage";
+import Tooltip from '@mui/material/Tooltip';
 import axios from "axios";
 
 function MessageInput({ currentChatInfo, setIsFileUploaded }) {
@@ -129,29 +130,39 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
               {showEmojiPicker && (
                 <EmojiPicker onEmojiClick={handleEmojiClick} autoFocusSearch />
               )}
-
+              <label htmlFor="file" className="text-white text-2xl cursor-pointer">
+                <ion-icon name="document-outline"></ion-icon>
+              </label>
               <input
                 type="file"
                 name="file"
+                id="file"
                 onChange={(e) => {
                   setFieldValue("file", e.target.files[0]);
                   setIsFileUploaded(true);
                 }}
                 ref={fileInputRef}
+                hidden
               />
+              
               {values.file ? (
-                <button
-                  className="text-white text-2xl"
-                  onClick={() => {
-                    setFieldValue("file", null);
-                    fileInputRef.current.value = null;
-                    setIsFileUploaded(false);
-                  }}
-                >
-                  <ion-icon name="close-circle-outline"></ion-icon>
-                </button>
+                <Tooltip title="Remove file" placement="top">
+                  <button
+                    className="text-white text-2xl ml-2 "
+                    onClick={() => {
+                      setFieldValue("file", null);
+                      fileInputRef.current.value = null;
+                      setIsFileUploaded(false);
+                    }}
+                  >
+                    <ion-icon name="close-circle-outline"></ion-icon>
+                  </button>
+              </Tooltip>
+                
               ) : null}
-              {errors.file && <p style={{ color: "red" }}>{errors.file}</p>}
+            
+
+              {/* {errors.file && <p style={{ color: "red" }}>{errors.file}</p>} */}
               <Field
                 type="text"
                 placeholder="Message"

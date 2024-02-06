@@ -27,11 +27,11 @@ export const PreviewImage = ({ file }) => {
 
   return (
     <div className="relative w-full p-8 h-[40rem] flex flex-col justify-center items-center">
-      <div className="mb-20 text-white font-medium text-lg">
+      <div className="mb-2 text-white font-medium text-lg">
         <p>{file.name}</p>
       </div>
-      <img className="max-w-full max-h-full mt-20 mb-10" src={preview} alt="" />
-      <div className="m-4">
+      <img className="max-w-full max-h-full mb-2" src={preview} alt="" width={500} height={600}/>
+      <div className="mt-4">
         <p className="text-white font-light">Size: {file.size}B</p>
       </div>
     </div>
