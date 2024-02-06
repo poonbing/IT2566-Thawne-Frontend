@@ -8,6 +8,7 @@ import NotificationSettings from "./pages/NotificationSettings";
 import ProfileSettings from "./pages/ProfileSettings";
 import DataSettings from "./pages/DataSettings";
 import LoginPage from "./pages/LoginPage";
+import PDFViewPage from "./pages/PDFViewPage";
 import NavBar from "./components/NavBar";
 import CreateChatModal from "./components/modals/CreateChatModal";
 import useUserPassword from "./hooks/useUserPassword";
@@ -40,97 +41,110 @@ function App() {
     logout();
   }, []);
 
-  
-
   return (
     <>
-    {loading ? (
-      <div className="h-screen w-full flex justify-center items-center">
-        <ClimbingBoxLoader
-        color={"#FFFF00"}
-        loading={loading}
-        size={20}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-        speedMultiplier={1}
-      /> 
-      </div>): (
-      <div className="wrapper flex-1">
-        <Router>
-          <Routes>
-            {token ? (
-              <>
+      {loading ? (
+        <div className="h-screen w-full flex justify-center items-center">
+          <ClimbingBoxLoader
+            color={"#FFFF00"}
+            loading={loading}
+            size={20}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+            speedMultiplier={1}
+          />
+        </div>
+      ) : (
+        <div className="wrapper flex-1">
+          <Router>
+            <Routes>
+              {token ? (
+                <>
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <ChatPage
+                          handleChatSelect={handleChatSelect}
+                          selectedChat={selectedChat}
+                          userPassword={userPassword}
+                          loading={loading}
+                          setLoading={setLoading}
+                        />
+                        {isModalOpen && (
+                          <CreateChatModal
+                            closeModal={closeModal}
+                            userPassword={userPassword}
+                          />
+                        )}
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/pdf"
+                    element={
+                      <>
+                        <PDFViewPage />
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/settings/profile"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <ProfileSettings />
+                        {isModalOpen && (
+                          <CreateChatModal
+                            closeModal={closeModal}
+                            userPassword={userPassword}
+                          />
+                        )}
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/settings/notifications"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <NotificationSettings />
+                        {isModalOpen && (
+                          <CreateChatModal closeModal={closeModal} />
+                        )}
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/settings/data"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <DataSettings />
+                        {isModalOpen && (
+                          <CreateChatModal closeModal={closeModal} />
+                        )}
+                      </>
+                    }
+                  />
+                </>
+              ) : (
                 <Route
                   path="/"
                   element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <ChatPage
-                        handleChatSelect={handleChatSelect}
-                        selectedChat={selectedChat}
-                        userPassword={userPassword}
-                        loading={loading}
-                        setLoading={setLoading}
-                      />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} userPassword={userPassword} />
-                      )}
-                    </>
+                    <LoginPage
+                      setToken={setToken}
+                      setUserPassword={setUserPassword}
+                      loading={loading}
+                      setLoading={setLoading}
+                    />
                   }
                 />
-                <Route
-                  path="/settings/profile"
-                  element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <ProfileSettings />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} userPassword={userPassword}/>
-                      )}
-                    </>
-                  }
-                />
-                <Route
-                  path="/settings/notifications"
-                  element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <NotificationSettings />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
-                      )}
-                    </>
-                  }
-                />
-                <Route
-                  path="/settings/data"
-                  element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <DataSettings />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
-                      )}
-                    </>
-                  }
-                />
-              </>
-            ) : (
-              <Route
-                path="/"
-                element={
-                  <LoginPage
-                    setToken={setToken}
-                    setUserPassword={setUserPassword}
-                    loading={loading}
-                    setLoading={setLoading}
-                  />
-                }
-              />
-            )}
-          </Routes>
-        </Router>
-      </div>
+              )}
+            </Routes>
+          </Router>
+        </div>
       )}
     </>
   );

@@ -11,12 +11,16 @@ function createWindow() {
     icon: path.join(__dirname, '..', 'public', 'icons', 'icon.ico'),
 
 
+
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: true,
       contextIsolation: false
     },
   });
+
+  mainWindow.setContentProtection(true);
+
   mainWindow.webContents.setWindowOpenHandler((edata) => {
     shell.openExternal(edata.url);
     return { action: "deny" };
@@ -27,14 +31,10 @@ function createWindow() {
       ? 'http://localhost:3000'
       : `file://${path.join(__dirname, '../dist/index.html')}`
   );
-  // Open the DevTools.
-  if (isDev) {
-    //mainWindow.webContents.openDevTools();
-  }
- 
+
 }
  
- 
+
 app.whenReady().then(() => {
   createWindow()
   app.on('activate', function () {
