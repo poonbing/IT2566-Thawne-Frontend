@@ -4,11 +4,16 @@ import useUserPassword from "../hooks/useUserPassword";
 import socketIOClient from "socket.io-client";
 import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
-import OpenCVComponent from "../components/OpenCV";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
 import RotateLoader from "react-spinners/RotateLoader";
 
-function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLoading }) {
+function ChatPage({
+  handleChatSelect,
+  selectedChat,
+  userPassword,
+  loading,
+  setLoading,
+}) {
   const [currentChatInfo, setcurrentChatInfo] = useState({});
   const [chatList, setChatList] = useState([]);
   const [verifyChatModalIndex, setVerifyChatModalIndex] = useState(null);
@@ -23,10 +28,9 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
   const closeVerifyChatModal = () => {
     setVerifyChatModalIndex(null);
   };
-  
 
   const handlePasswordSubmit = async (password) => {
-    setLoading(true)
+    setLoading(true);
     const socket = socketIOClient("http://localhost:5000");
     try {
       const data = await new Promise((resolve, reject) => {
@@ -47,7 +51,7 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
       });
 
       if (data.success) {
-        setUnlock(true)
+        setUnlock(true);
         closeVerifyChatModal();
         const selectedChat = chatList[verifyChatModalIndex];
         handleChatSelect(selectedChat);
@@ -58,13 +62,13 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
           seclvl: chatList[verifyChatModalIndex].security_level,
           pass: password,
         });
-        setLoading(false)
+        setLoading(false);
       } else {
         console.error("Incorrect password");
-        setLoading(false)
+        setLoading(false);
       }
     } catch (error) {
-      setLoading(false)
+      setLoading(false);
       console.error("Error processing password submission:", error);
     }
   };

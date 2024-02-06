@@ -1,9 +1,8 @@
 import React from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
-import OpenCVComponent from "../components/OpenCV";
 import { loginUser } from "../api/authApi";
-import { useEffect} from "react";
+import { useEffect } from "react";
 
 function Login({ setToken, setUserPassword, loading, setLoading }) {
   const initialValues = {
@@ -11,21 +10,19 @@ function Login({ setToken, setUserPassword, loading, setLoading }) {
     password: "",
   };
 
-
-
   const loginSchema = Yup.object({
     username: Yup.string().required("Staff code is required"),
     password: Yup.string().required("Password is required"),
   });
 
   const handleSubmit = async (values) => {
-    setLoading(true)
+    setLoading(true);
     const token = await loginUser(values);
     setToken(token);
     setUserPassword({
       password: values.password,
     });
-    setLoading(false)
+    setLoading(false);
   };
 
   return (
@@ -94,9 +91,8 @@ function Login({ setToken, setUserPassword, loading, setLoading }) {
           </Form>
         </Formik>
       </div>
-       {/* <OpenCVComponent /> */}
+      {/* <OpenCVComponent /> */}
     </div>
-    
   );
 }
 
