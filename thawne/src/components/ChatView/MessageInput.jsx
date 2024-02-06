@@ -16,7 +16,6 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   const [confirm, setConfirm] = useState(false);
   const fileInputRef = useRef(null);
 
-
   const initialValues = {
     message: "",
     file: "",
@@ -24,11 +23,21 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
 
   const messageSchema = Yup.object({
     message: Yup.string().required("Message is required"),
-    file: Yup.mixed().required()
-        .test("FILE_SIZE", "Too big!", (value) => value && value.size < 1024 * 1024)
-        .test("FILE_TYPE", "Invalid File Type!", (value) => value && ['image/png', 'image/jpeg'].includes(value.type))
-    })
-
+    file: Yup.mixed()
+      .required()
+      .test(
+        "FILE_SIZE",
+        "Too big!",
+        (value) => value && value.size < 1024 * 1024
+      )
+      .test(
+        "FILE_TYPE",
+        "Invalid File Type!",
+        (value) =>
+          value &&
+          ["image/png", "image/jpeg", "application/pdf"].includes(value.type)
+      ),
+  });
 
   const handleSendMessage = (values, { resetForm }) => {
     if (values.message.trim() !== "") {
@@ -47,13 +56,11 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         setShowModal(true);
         setSensitiveDataList(sensitiveList);
         setEditedValues(editedvalues);
-      }
-      else if (currentChatInfo.seclvl == "Sensitive" && values.file == !""){
-        setSecurityModal(true)
+      } else if (currentChatInfo.seclvl == "Sensitive" && values.file == !"") {
+        setSecurityModal(true);
         editedvalues.fileSecurity = values.fileSecurity;
-        setEditedValues(editedvalues)
-      }
-      else {
+        setEditedValues(editedvalues);
+      } else {
         setEditedValues(editedvalues);
         setConfirm(true);
       }
@@ -215,47 +222,46 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         </div>
       )}
       {showSecurityModal && (
-  
-          <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
-            <div className="bg-white p-6 rounded-md">
-              <h2>Select file security</h2>
-              <input type="radio" name="fileSecurity" id="open" value={"Open"} />
-              <label htmlFor="open">Open</label>
-              {currentChatInfo.seclvl === "Sensitive" ? (
-                <>
-                  <input type="radio" name="fileSecurity" id="sensitive" value={"Sensitive"} />
-                  <label htmlFor="sensitive">Sensitive</label>
-                </>
-              ):(
-                  null
-              )
-              }
-              
+        <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <div className="bg-white p-6 rounded-md">
+            <h2>Select file security</h2>
+            <input type="radio" name="fileSecurity" id="open" value={"Open"} />
+            <label htmlFor="open">Open</label>
+            {currentChatInfo.seclvl === "Sensitive" ? (
+              <>
+                <input
+                  type="radio"
+                  name="fileSecurity"
+                  id="sensitive"
+                  value={"Sensitive"}
+                />
+                <label htmlFor="sensitive">Sensitive</label>
+              </>
+            ) : null}
 
-              <button
-                type="button"
-                onClick={() => {
-                  setSecurityModal(false);
-                }}
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
-              >
-                Cancel
-              </button>
+            <button
+              type="button"
+              onClick={() => {
+                setSecurityModal(false);
+              }}
+              className="bg-red-500 text-white px-4 py-2 rounded-md"
+            >
+              Cancel
+            </button>
 
-              <button type="button" onClick={() => {
-                  setSecurityModal(false);
-                  setConfirm(true);
-                }} className="bg-green-500 text-white px-4 py-2 rounded-md">
-                  Send
-              </button>
-  
-
-            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setSecurityModal(false);
+                setConfirm(true);
+              }}
+              className="bg-green-500 text-white px-4 py-2 rounded-md"
+            >
+              Send
+            </button>
           </div>
-
+        </div>
       )}
-
-
     </>
   );
 }
