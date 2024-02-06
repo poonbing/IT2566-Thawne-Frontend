@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import EmojiPicker from "emoji-picker-react";
 import * as Yup from "yup";
-import { Formik, Form, Field, useFormik} from "formik";
+import { Formik, Form, Field, useFormik } from "formik";
 import { submitMessage } from "../../api/chatApi";
 import { fileUpload } from "../../api/chatApi";
 import { PreviewImage } from "./PreviewImage";
 import axios from "axios";
 
-function MessageInput({ currentChatInfo }) {
+function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [sensitiveDataList, setSensitiveDataList] = useState([]);
@@ -22,37 +22,39 @@ function MessageInput({ currentChatInfo }) {
 
   const messageSchema = Yup.object({
     message: Yup.string().required("Message is required"),
-    file: Yup.mixed().required()
-        .test("FILE_SIZE", "Too big!", (value) => value && value.size < 1024 * 1024)
-        .test("FILE_TYPE", "Invalid File Type!", (value) => value && ['image/png', 'image/jpeg'].includes(value.type))
-    })
-
-
-    
+    file: Yup.mixed()
+      .test(
+        "FILE_SIZE",
+        "Too big!",
+        (value) => !value || value.size < 1024 * 1024
+      )
+      .test(
+        "FILE_TYPE",
+        "Invalid File Type!",
+        (value) =>
+          !value ||
+          ["image/png", "image/jpeg", "application/pdf"].includes(value.type)
+      ),
+  });
 
   const handleSendMessage = (values, { resetForm }) => {
-    console.log(values)
     if (values.message.trim() !== "") {
       const editedvalues = {
         chatId: currentChatInfo.chat_id,
         userId: currentChatInfo.userId,
         securityLevel: currentChatInfo.seclvl,
         chatPassword: currentChatInfo.pass,
-        fileSecurity: 'Open',
-        fileName: values.file.name,
+        fileSecurity: "Open",
+        fileName: values.file ? values.file.name : null,
         ...values,
-
       };
-      console.log(editedvalues)
       let sensitiveList = textScanning(values.message);
 
       if (sensitiveList.length > 0) {
         setShowModal(true);
         setSensitiveDataList(sensitiveList);
         setEditedValues(editedvalues);
-      }
-  
-      else {
+      } else {
         setEditedValues(editedvalues);
         setConfirm(true);
       }
@@ -98,17 +100,17 @@ function MessageInput({ currentChatInfo }) {
     }
   }, [editedvalues, confirm]);
 
-
   return (
     <>
       <Formik
         initialValues={initialValues}
         validationSchema={messageSchema}
         onSubmit={handleSendMessage}
-        
       >
         {({ setFieldValue, errors, values }) => (
           <Form>
+            {values.file && <PreviewImage file={values.file} />}
+
             <div className="flex items-center justify-between w-full p-3 border-t border-black">
               <button
                 type="button"
@@ -121,18 +123,28 @@ function MessageInput({ currentChatInfo }) {
                 <EmojiPicker onEmojiClick={handleEmojiClick} autoFocusSearch />
               )}
 
-              <input 
-                type="file" 
-                name="file" onChange={(e) => 
-                setFieldValue("file", e.target.files[0])} 
+              <input
+                type="file"
+                name="file"
+                onChange={(e) => {
+                  setFieldValue("file", e.target.files[0]);
+                  setIsFileUploaded(true);
+                }}
                 ref={fileInputRef}
-                />
-              {values.file ? <button className="text-white text-2xl" onClick={() =>{
-                setFieldValue("file", null);
-                fileInputRef.current.value = null;
-              }
-              }><ion-icon name="close-circle-outline"></ion-icon></button> : null}
-              {errors.file && (<p style={{color: 'red'}}>{errors.file}</p>)}
+              />
+              {values.file ? (
+                <button
+                  className="text-white text-2xl"
+                  onClick={() => {
+                    setFieldValue("file", null);
+                    fileInputRef.current.value = null;
+                    setIsFileUploaded(false);
+                  }}
+                >
+                  <ion-icon name="close-circle-outline"></ion-icon>
+                </button>
+              ) : null}
+              {errors.file && <p style={{ color: "red" }}>{errors.file}</p>}
               <Field
                 type="text"
                 placeholder="Message"
@@ -145,14 +157,16 @@ function MessageInput({ currentChatInfo }) {
               <button
                 type="submit"
                 className="text-white bg-transparent text-2xl px-2 py-1"
+                onClick={() => {
+                  setIsFileUploaded(false);
+                }}
               >
                 <ion-icon name="send"></ion-icon>
               </button>
             </div>
-            {values.file && <PreviewImage file={values.file} />}
           </Form>
         )}
-      </Formik> 
+      </Formik>
 
       {showModal && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
@@ -205,4 +219,4 @@ function MessageInput({ currentChatInfo }) {
   );
 }
 
-export default MessageInput;
+export default MessageInput;

@@ -15,7 +15,7 @@ import useUserPassword from "./hooks/useUserPassword";
 function App() {
   const [selectedChat, setSelectedChat] = useState(null);
   const { userPassword, setUserPassword } = useUserPassword();
-  const { token, setToken } = useToken();
+  const { token, setToken, logout } = useToken();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -32,101 +32,103 @@ function App() {
   };
 
   useEffect(() => {
-    setLoading(true)
+    setLoading(true);
     setTimeout(() => {
-      setLoading(false)
-    }, 500)
-  }, [])
+      setLoading(false);
+    }, 500);
+    logout();
+  }, []);
 
   return (
     <>
-    {loading ? (
-      <div className="h-screen w-full flex justify-center items-center">
-        <RotateLoader
-        color={"#FFFF00"}
-        loading={loading}
-        size={20}
-        aria-label="Loading Spinner"
-        data-testid="loader"
-        speedMultiplier={1}
-      /> 
-      </div>): (
-      <div className="wrapper flex-1">
-        <Router>
-          <Routes>
-            {token ? (
-              <>
+      {loading ? (
+        <div className="h-screen w-full flex justify-center items-center">
+          <RotateLoader
+            color={"#FFFF00"}
+            loading={loading}
+            size={20}
+            aria-label="Loading Spinner"
+            data-testid="loader"
+            speedMultiplier={1}
+          />
+        </div>
+      ) : (
+        <div className="wrapper flex-1">
+          <Router>
+            <Routes>
+              {token ? (
+                <>
+                  <Route
+                    path="/"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <ChatPage
+                          handleChatSelect={handleChatSelect}
+                          selectedChat={selectedChat}
+                          userPassword={userPassword}
+                          loading={loading}
+                          setLoading={setLoading}
+                        />
+                        {isModalOpen && (
+                          <CreateChatModal closeModal={closeModal} />
+                        )}
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/settings/profile"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <ProfileSettings />
+                        {isModalOpen && (
+                          <CreateChatModal closeModal={closeModal} />
+                        )}
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/settings/notifications"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <NotificationSettings />
+                        {isModalOpen && (
+                          <CreateChatModal closeModal={closeModal} />
+                        )}
+                      </>
+                    }
+                  />
+                  <Route
+                    path="/settings/data"
+                    element={
+                      <>
+                        <NavBar openModal={openModal} />
+                        <DataSettings />
+                        {isModalOpen && (
+                          <CreateChatModal closeModal={closeModal} />
+                        )}
+                      </>
+                    }
+                  />
+                </>
+              ) : (
                 <Route
                   path="/"
                   element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <ChatPage
-                        handleChatSelect={handleChatSelect}
-                        selectedChat={selectedChat}
-                        userPassword={userPassword}
-                        loading={loading}
-                        setLoading={setLoading}
-                      />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
-                      )}
-                    </>
+                    <LoginPage
+                      setToken={setToken}
+                      setUserPassword={setUserPassword}
+                      loading={loading}
+                      setLoading={setLoading}
+                    />
                   }
                 />
-                <Route
-                  path="/settings/profile"
-                  element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <ProfileSettings />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
-                      )}
-                    </>
-                  }
-                />
-                <Route
-                  path="/settings/notifications"
-                  element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <NotificationSettings />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
-                      )}
-                    </>
-                  }
-                />
-                <Route
-                  path="/settings/data"
-                  element={
-                    <>
-                      <NavBar openModal={openModal} />
-                      <DataSettings />
-                      {isModalOpen && (
-                        <CreateChatModal closeModal={closeModal} />
-                      )}
-                    </>
-                  }
-                />
-              </>
-            ) : (
-              <Route
-                path="/"
-                element={
-                  <LoginPage
-                    setToken={setToken}
-                    setUserPassword={setUserPassword}
-                    loading={loading}
-                    setLoading={setLoading}
-                  />
-                }
-              />
-            )}
-          </Routes>
-        </Router>
-      </div>
+              )}
+            </Routes>
+          </Router>
+        </div>
       )}
     </>
   );
