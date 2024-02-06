@@ -45,10 +45,14 @@ function createChatModal({ closeModal, userPassword }) {
           }}
           validationSchema={chatSchema}
 
-          onSubmit={(values) => {
+          onSubmit={async (values) => {
             console.log(values);
-            createChat(values);
-            closeModal();
+            try {
+              await createChat(values);
+              closeModal();
+            } catch (error) {
+              console.error("Error creating chat:", error);
+            }
           }}
         >
           {({ errors, touched, values }) => (

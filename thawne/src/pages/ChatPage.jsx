@@ -26,10 +26,9 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
   
 
   const handlePasswordSubmit = async (password) => {
-    setLoading(true)
-    const socket = socketIOClient("http://localhost:5000");
-    try {
-      const data = await new Promise((resolve, reject) => {
+    
+      return new Promise((resolve, reject) => {
+        const socket = socketIOClient("http://localhost:5000/auth");
         socket.emit("verify_chat_user", {
           uid: token,
           cid: chatList[verifyChatModalIndex].chat_id,
@@ -38,35 +37,26 @@ function ChatPage({ handleChatSelect, selectedChat, userPassword, loading, setLo
         });
         socket.on("return_chat_user", (data) => {
           socket.disconnect();
+          console.log(data)
+          setUnlock(true)
+          closeVerifyChatModal();
+          const selectedChat = chatList[verifyChatModalIndex];
+          handleChatSelect(selectedChat);
+          setActiveChat(verifyChatModalIndex);
+          setcurrentChatInfo({
+            chat_id: chatList[verifyChatModalIndex].chat_id,
+            userId: token,
+            seclvl: chatList[verifyChatModalIndex].security_level,
+            pass: password,
+          });
           resolve(data);
         });
         socket.on("error_chat_user", (error) => {
           socket.disconnect();
+          console.log(error)
           reject(error);
         });
       });
-
-      if (data.success) {
-        setUnlock(true)
-        closeVerifyChatModal();
-        const selectedChat = chatList[verifyChatModalIndex];
-        handleChatSelect(selectedChat);
-        setActiveChat(verifyChatModalIndex);
-        setcurrentChatInfo({
-          chat_id: chatList[verifyChatModalIndex].chat_id,
-          userId: token,
-          seclvl: chatList[verifyChatModalIndex].security_level,
-          pass: password,
-        });
-        setLoading(false)
-      } else {
-        console.error("Incorrect password");
-        setLoading(false)
-      }
-    } catch (error) {
-      setLoading(false)
-      console.error("Error processing password submission:", error);
-    }
   };
 
   return (

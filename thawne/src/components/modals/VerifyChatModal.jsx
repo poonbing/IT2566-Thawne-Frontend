@@ -17,7 +17,9 @@ function VerifyChatModal({ handlePasswordSubmit, closeVerifyChatModal }) {
           }}
           validationSchema={verificationSchema}
           onSubmit={(values) => {
+            console.log(values)
             handlePasswordSubmit(values.password);
+
           }}
         >
           {({ errors, touched, values }) => (

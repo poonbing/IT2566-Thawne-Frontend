@@ -32,10 +32,13 @@ async function createChat(chatValues) {
     socket.emit('create_chat', chatValues);
     socket.on('return_chat_creation', (data) => {
       socket.disconnect();
+      console.log(data)
       resolve(data);
     });
+
     socket.on('error_chat_creation', (error) => {
       socket.disconnect();
+      console.log(`Error creating chat: ${error}`)
       reject(new Error(`Error creating chat: ${error.message}`));
     });
   });
@@ -107,7 +110,10 @@ async function fileUpload(file) {
       console.log(message.url)
       const uploadResponse = fetch(message.url, {
         method: 'PUT',
-        body: file.file
+        body: file.file,
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+      }
       });
       if (uploadResponse.ok) {
         console.log('File uploaded successfully!');
