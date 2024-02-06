@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
  
 const isDev = process.env.IS_DEV == "true" ? true : false;
@@ -10,14 +10,20 @@ function createWindow() {
     frame: true,
     icon: path.join(__dirname, '..', 'public', 'icons', 'icon.ico'),
 
-
+    
 
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: true,
     },
   });
+
+  ipcMain.on('set-title', (event, title) => {
+    const webContents = event.sender
+    const win = BrowserWindow.fromWebContents(webContents)
+    win.setTitle(title)
+  })
+
 
   mainWindow.setContentProtection(true);
 
