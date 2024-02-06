@@ -95,12 +95,15 @@ async function fileUpload(file) {
     socket.emit('file_upload', file);
     socket.on('return_filename_check', (data) => {
       socket.disconnect();
-      resolve(data);
-
+      resolve(data); 
     });
     socket.on('error_message_list', (error) => {
       socket.disconnect();
-      reject(new Error(`Error fetching message list: ${error.message}`));
+      reject(new Error(`Error with file upload: ${error.message}`));
+    });
+    socket.on('inappropriate_level', (error) => {
+      socket.disconnect();
+      alert(`File upload is not allowed. Granted security level: ${error}`)
     });
   });
 }

@@ -101,6 +101,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   useEffect(() => {
     if (editedvalues && confirm) {
       fileUpload(editedvalues);
+
       setEditedValues(null);
       setConfirm(false);
     }
