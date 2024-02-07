@@ -66,12 +66,12 @@ async function getMessageList(currentChat) {
     const socket = socketIOClient('http://localhost:5000/chat');
     socket.emit('get_message_list', currentChat);
     socket.on('return_message_list', (data) => {
-      socket.disconnect();
+      
       resolve(data);
 
     });
     socket.on('error_message_list', (error) => {
-      socket.disconnect();
+      
       reject(new Error(`Error fetching message list: ${error.message}`));
     });
   });

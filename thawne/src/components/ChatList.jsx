@@ -56,24 +56,30 @@ function ChatList({
     }
   };
 
-  const checkSecurity = (level) => {
+  const checkSecurity = (level, index) => {
     if (level === "Top Secret") {
       return (
-        <div>
-          <span className="text-xs bg-red-600 text-white font-semibold p-1 rounded-md">
+        <div className="flex">
+          <span className="text-xs bg-red-600 text-white font-semibold p-1 rounded-md text-center">
             Top Secret
           </span>
           <span className="text-white ml-1">
-            {unlock ? (<ion-icon name="lock-open-outline"></ion-icon>): 
+            {unlock && index === activeChat ? (<ion-icon name="lock-open-outline"></ion-icon>): 
             (<ion-icon name="lock-closed"></ion-icon>)}
           </span>
         </div>
       );
     } else if (level === "Sensitive") {
       return (
-        <span className="text-xs bg-yellow-600 text-white font-semibold p-1 rounded-md">
-          Sensitive
-        </span>
+        <div>
+          <span className="text-xs bg-yellow-600 text-white font-semibold p-1 rounded-md">
+            Sensitive
+          </span>
+            <span className="text-white ml-1">
+            {unlock && index === activeChat ? (<ion-icon name="lock-open-outline"></ion-icon>): 
+            (<ion-icon name="lock-closed"></ion-icon>)}
+          </span>
+        </div>
       );
     } else {
       return (
@@ -111,7 +117,7 @@ function ChatList({
                   <span className="font-semibold text-white">
                     {chat.chat_name}
                   </span>
-                  {checkSecurity(chat.security_level)}
+                  {checkSecurity(chat.security_level, index)}
                 </div>
                 <span className="text-sm text-gray-600">{}</span>
               </div>
