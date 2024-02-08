@@ -2,7 +2,7 @@
   "name": "thawne",
   "private": true,
   "version": "0.0.0",
-  "main": "electron/main.js",
+  "main": "main.js",
   "type": "commonjs",
   "scripts": {
     "dev": "vite",

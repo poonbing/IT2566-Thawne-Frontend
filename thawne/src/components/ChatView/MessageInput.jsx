@@ -6,7 +6,6 @@ import { submitMessage } from "../../api/chatApi";
 import { fileUpload } from "../../api/chatApi";
 import { PreviewImage } from "./PreviewImage";
 import Tooltip from '@mui/material/Tooltip';
-import axios from "axios";
 
 function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
