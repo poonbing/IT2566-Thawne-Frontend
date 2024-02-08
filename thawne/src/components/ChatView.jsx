@@ -3,7 +3,6 @@ import MessageList from "./ChatView/MessageList";
 import MessageInput from "./ChatView/MessageInput";
 import ChatDetails from "./ChatDetails";
 import useToken from "../hooks/useToken";
-import { getMessageList } from "../api/chatApi";
 
 function ChatView({ selectedChat, currentChatInfo }) {
   const [isDetailsOpen, setDetailsOpen] = useState(false);
