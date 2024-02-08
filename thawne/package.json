@@ -13,7 +13,8 @@
     "electron:dev": "concurrently -k \"cross-env BROWSER=none npm run dev\" \"npm run electron\"",
     "electron:builder": "electron-builder",
     "build:for:electron": "tsc --noEmit && cross-env ELECTRON=true vite build",
-    "app:build": "npm run build:for:electron && npm run electron:builder"
+    "app:build": "npm run build:for:electron && npm run electron:builder",
+    "start":"concurrently \"local-ssl-proxy --config config.json\" \"npm run electron:dev\""
   },
   "dependencies": {
     "@emotion/react": "^11.11.1",
@@ -23,6 +24,7 @@
     "axios": "^1.6.7",
     "emoji-mart": "^5.5.2",
     "emoji-picker-react": "^4.5.16",
+    "file-type": "^19.0.0",
     "formik": "^2.4.5",
     "js-tokens": "^8.0.2",
     "react": "^18.2.0",
