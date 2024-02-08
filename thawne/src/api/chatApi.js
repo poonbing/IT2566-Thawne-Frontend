@@ -101,34 +101,12 @@ async function fileScan(file) {
       socket.disconnect();
       reject(new Error(`Error with file upload: ${error.message}`));
     });
-    socket.on('return_file_upload', (message) => {
-      socket.disconnect();
-      alert(` Signed URL. \n Details: ${message.url}`)
-      console.log(message.url)
-      const state = {
-        file:file.file,
-        signedUrl:message.url
-      };
-      handleUpload = async () => {
-        const { file, signedUrl } = this.state;
-        if (!file || !signedUrl) return;
-        try {
-          await axios.put(signedUrl, file, {
-            headers:{
-              'Content-Type': file.type
-            }
-          });
-          console.log('File uploaded successfully');
-        } catch (error) {
-          console.error('Error uploading file:', error)
-        }
-      }
     socket.on('inappropriate_level', (error) => {
       socket.disconnect();
       alert(` File upload is not allowed. \n Granted security level: ${error}`)
     });
   });
-})};
+};
 
 
 async function fileUpload(file) {
