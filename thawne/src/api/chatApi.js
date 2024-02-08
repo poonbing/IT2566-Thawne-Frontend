@@ -1,4 +1,5 @@
 import socketIOClient from 'socket.io-client';
+import axios from 'axios'
 
 
 async function reflectAllChats(userId, password) {
@@ -52,6 +53,7 @@ async function submitMessage(content) {
     socket.on('return_message_submission', (data) => {
       console.log(data)
       resolve(data);
+      
     });
     socket.on('error_message_submission', (error) => {
       reject(new Error(`Error sending message: ${error.message}`));
@@ -99,30 +101,12 @@ async function fileScan(file) {
       socket.disconnect();
       reject(new Error(`Error with file upload: ${error.message}`));
     });
-    socket.on('return_file_upload', (message) => {
-      socket.disconnect();
-      alert(` Signed URL. \n Details: ${message.url}`)
-      console.log(message.url)
-      const uploadResponse = fetch(message.url, {
-        method: 'PUT',
-        body: file.file,
-        headers: {
-          'Access-Control-Allow-Origin': '*'
-      }
-      });
-      if (uploadResponse.ok) {
-        console.log('File uploaded successfully!');
-      } else {
-        console.error('Error uploading file:', uploadResponse.statusText);
-      }
-    });
-    
     socket.on('inappropriate_level', (error) => {
       socket.disconnect();
       alert(` File upload is not allowed. \n Granted security level: ${error}`)
     });
   });
-}
+};
 
 
 async function fileUpload(file) {
@@ -139,11 +123,12 @@ async function fileUpload(file) {
       alert(` Signed URL. \n Details: ${message.url}`)
       console.log(message.url)
       const uploadResponse = fetch(message.url, {
+        mode: 'cors',
         method: 'PUT',
         body: file.file,
         headers: {
           'Access-Control-Allow-Origin': '*'
-      }
+        }
       });
       if (uploadResponse.ok) {
         console.log('File uploaded successfully!');
