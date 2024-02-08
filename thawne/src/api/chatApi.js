@@ -50,12 +50,10 @@ async function submitMessage(content) {
     const socket = socketIOClient('http://localhost:5000/chat');
     socket.emit('submit_message', content);
     socket.on('return_message_submission', (data) => {
-      socket.disconnect();
       console.log(data)
       resolve(data);
     });
     socket.on('error_message_submission', (error) => {
-      socket.disconnect();
       reject(new Error(`Error sending message: ${error.message}`));
     });
   });
@@ -67,12 +65,9 @@ async function getMessageList(currentChat) {
     const socket = socketIOClient('http://localhost:5000/chat');
     socket.emit('get_message_list', currentChat);
     socket.on('return_message_list', (data) => {
-      socket.disconnect();
       resolve(data);
-
     });
     socket.on('error_message_list', (error) => {
-      socket.disconnect();
       reject(new Error(`Error fetching message list: ${error.message}`));
     });
   });
@@ -83,12 +78,10 @@ async function checkFileName(file) {
     const socket = socketIOClient('http://localhost:5000');
     socket.emit('check_filename', file);
     socket.on('return_filename_check', (data) => {
-      socket.disconnect();
       resolve(data);
 
     });
     socket.on('error_message_list', (error) => {
-      socket.disconnect();
       reject(new Error(`Error fetching message list: ${error.message}`));
     });
   });
@@ -137,15 +130,12 @@ async function fileUpload(file) {
     const socket = socketIOClient('http://localhost:5000/chat');
     socket.emit('file_upload', file);
     socket.on('return_filename_check', (data) => {
-      socket.disconnect();
       resolve(data); 
     });
     socket.on('error_message_list', (error) => {
-      socket.disconnect();
       reject(new Error(`Error with file upload: ${error.message}`));
     });
     socket.on('return_file_upload', (message) => {
-      socket.disconnect();
       alert(` Signed URL. \n Details: ${message.url}`)
       console.log(message.url)
       const uploadResponse = fetch(message.url, {
@@ -161,9 +151,7 @@ async function fileUpload(file) {
         console.error('Error uploading file:', uploadResponse.statusText);
       }
     });
-    
     socket.on('inappropriate_level', (error) => {
-      socket.disconnect();
       alert(` File upload is not allowed. \n Granted security level: ${error}`)
     });
   });

@@ -12,6 +12,8 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   const [showModal, setShowModal] = useState(false);
   const [showSecurityModal, setSecurityModal] = useState(false);
   const [sensitiveDataList, setSensitiveDataList] = useState([]);
+  const [maskSensitiveList, setMaskSensitiveList] = useState([]);
+  const [maskOption, setMaskOption] = useState(false)
   const [editedvalues, setEditedValues] = useState(null);
   const [confirm, setConfirm] = useState(false);
   const fileInputRef = useRef(null);
@@ -23,21 +25,8 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   };
 
   const messageSchema = Yup.object({
-    message: Yup.string().required("Message is required"),
+    message: Yup.string(),
     file: Yup.mixed()
-      .required()
-      .test(
-        "FILE_SIZE",
-        "Too big!",
-        (value) => value && value.size < 1024 * 1024
-      )
-      .test(
-        "FILE_TYPE",
-        "Invalid File Type!",
-        (value) =>
-          value &&
-          ["image/png", "image/jpeg", "application/pdf"].includes(value.type)
-      ),
   });
 
   const handleFileSecurityChange = (event) => {
@@ -46,7 +35,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
 
 
   const handleSendMessage = (values, { resetForm }) => {
-    if (values.message.trim() !== "") {
+    if (values.message.trim() !== "" || values.file !== null) {
       const editedvalues = {
         chatId: currentChatInfo.chat_id,
         userId: currentChatInfo.userId,
@@ -56,12 +45,15 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         fileName: values.file ? values.file.name : null,
         ...values,
       };
+      console.log(editedvalues)
       let sensitiveList = textScanning(values.message);
-      console.log(currentChatInfo.seclvl)
-      console.log(values.file)
+      let maskList = maskScanning(values.message);
+      console.log(maskList)
+      
       if (sensitiveList.length > 0) {
         setShowModal(true);
         setSensitiveDataList(sensitiveList);
+        setMaskSensitiveList(maskList)
         setEditedValues(editedvalues);
       } else if (currentChatInfo.seclvl == "Sensitive" && values.file) {
         setSecurityModal(true);
@@ -77,6 +69,19 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       }
     }
   };
+
+
+  const sendMaskMessage = () => {
+    if (maskSensitiveList.length > 0){
+      
+      let maskMessage = editedvalues.message
+      sensitiveDataList.forEach((sensitiveWord, index) => {
+        maskMessage = maskMessage.replace(sensitiveWord, maskSensitiveList[index])
+      })
+      editedvalues.message = maskMessage
+      setConfirm(true)
+    }
+  }
 
   const handleEmojiClick = (emojiData) => {
     setFieldValue("message", messageText + emojiData.emoji);
@@ -103,18 +108,46 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         }
       }
     }
-
+    
     return sensitiveList;
   };
 
+  const maskScanning = (text) => {
+    const maskList = []
+    const words = text.split(/\s+/); // Split the text into words
+    for (let word of words) {
+      for (let pattern of sensitiveData) {
+        const match = pattern.test(word);
+        if (match) {
+          const last4Characters = word.slice(-4)
+          const masked = 'x'.repeat(word.length - 4)
+          const maskedWord = masked + last4Characters
+          maskList.push(maskedWord);
+        }
+      }
+    }
+    
+    return maskList;
+  };
+
+  
+
   useEffect(() => {
     if (editedvalues && confirm) {
-      fileUpload(editedvalues);
-
+      if (editedvalues.message === ''){
+        fileUpload(editedvalues);
+        alert('File uploaded')
+      }
+      else{
+        submitMessage(editedvalues)
+        console.log(editedvalues)
+      }
+      
       setEditedValues(null);
       setConfirm(false);
     }
   }, [editedvalues, confirm]);
+
 
   
 
@@ -141,8 +174,11 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 <EmojiPicker onEmojiClick={handleEmojiClick} autoFocusSearch />
               )}
               <label htmlFor="file" className="text-white text-2xl cursor-pointer">
-                <ion-icon name="document-outline"></ion-icon>
+                  <Tooltip title="Upload file" placement="top">
+                    <ion-icon name="document-outline"></ion-icon>
+                  </Tooltip>
               </label>
+              
               <input
                 type="file"
                 name="file"
@@ -153,15 +189,16 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 }}
                 ref={fileInputRef}
                 hidden
+                disabled={values.message.trim() !== ""}
               />
               
               {values.file ? (
-                <Tooltip title="Remove" placement="top">
+                <Tooltip title="Remove file" placement="top">
                   <button
                     className="text-white text-2xl ml-2 "
                     onClick={() => {
-                      setFieldValue("file", null);
-                      fileInputRef.current.value = null;
+                      setFieldValue("file", "");
+                      fileInputRef.current.value = "";
                       setIsFileUploaded(false);
                     }}
                   >
@@ -181,6 +218,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 onChange={(e) => {
                   setFieldValue("message", e.target.value);
                 }}
+                disabled={values.file !== ""}
               />
               <button
                 type="submit"
@@ -188,6 +226,8 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 onClick={() => {
                   setIsFileUploaded(false);
                 }}
+                hidden={values.message.trim() === "" && values.file === ""}
+                disabled={values.message.trim() === "" && values.file === ""}
               >
                 <ion-icon name="send"></ion-icon>
               </button>
@@ -199,10 +239,10 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       {showModal && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-md">
-            <h2>Sensitive Data detected!</h2>
+            <h2 className="font-bold">Sensitive Data detected!</h2>
             {sensitiveDataList.length > 0 ? (
               <div>
-                <p>The following sensitive data was found:</p>
+                <p className="font-semibold">The following sensitive data was found:</p>
                 <ul>
                   {sensitiveDataList.map((data, index) => (
                     <li key={index} className="italic">
@@ -215,6 +255,21 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
               <p>No sensitive data detected.</p>
             )}
 
+            {maskSensitiveList.length > 0 ? (
+              <div className="mt-2">
+                <p className="font-semibold">Send message with mask instead:</p>
+                <ul>
+                  {maskSensitiveList.map((data, index) => (
+                    <li key={index} className="italic">
+                      {data}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p>No masked data detected.</p>
+            )}
+
             <p className="font-bold mt-4">
               You're attempting to send a message with sensitive data. Do you
               want to proceed?
@@ -225,7 +280,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 onClick={() => {
                   setShowModal(false);
                 }}
-                className="bg-red-500 text-white px-4 py-2 rounded-md"
+                className="bg-red-600 text-white m-2 px-4 py-2 rounded-md hover:bg-red-700 transition-all ease-in-out duration-300"
               >
                 Cancel
               </button>
@@ -233,9 +288,19 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 type="button"
                 onClick={() => {
                   setShowModal(false);
+                  sendMaskMessage();
+                }}
+                className="bg-gray-700 text-white m-2 px-4 py-2 rounded-md hover:bg-gray-800 transition-all ease-in-out duration-300"
+              >
+                Mask it
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowModal(false);
                   setConfirm(true);
                 }}
-                className="bg-green-500 text-white px-4 py-2 rounded-md"
+                className="bg-gray-700 text-white m-2 px-4 py-2 rounded-md hover:bg-gray-800 transition-all ease-in-out duration-300"
               >
                 Send anyway
               </button>
@@ -255,7 +320,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
             checked={fileSecurity === "Open"} 
             onChange={handleFileSecurityChange} 
             />
-            <label htmlFor="open">Open</label>
+            <label htmlFor="open">Open</label> <br />
             
             
             <input
@@ -267,29 +332,33 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
               onChange={handleFileSecurityChange} 
               
             />
-            <label htmlFor="sensitive">Sensitive</label>
-              
-            <button
-              type="button"
-              onClick={() => {
-                setSecurityModal(false);
-              }}
-              className="bg-red-500 text-white px-4 py-2 rounded-md"
-            >
-              Cancel
-            </button>
+            <label htmlFor="sensitive">Sensitive</label> <br />
+            <div className="m-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setSecurityModal(false);
+                }}
+                className="bg-red-600 text-white m-2 px-4 py-2 rounded-md hover:bg-red-700 transition-all ease-in-out duration-300"
+              >
+                Cancel
+              </button>
 
-            <button
-              type="button"
-              onClick={() => {
-                setEditedValues(prevValues => ({...prevValues, fileSecurity: fileSecurity}));
-                setSecurityModal(false);
-                setConfirm(true);
-              }}
-              className="bg-green-500 text-white px-4 py-2 rounded-md"
-            >
-              Send
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setEditedValues(prevValues => ({...prevValues, fileSecurity: fileSecurity}));
+                  setSecurityModal(false);
+                  setConfirm(true);
+                }}
+                className="bg-gray-700 text-white m-2 px-4 py-2 rounded-md hover:bg-gray-800 transition-all ease-in-out duration-300"
+              >
+                Send
+              </button>
+
+            </div>
+              
+
           </div>
         </div>
       )}

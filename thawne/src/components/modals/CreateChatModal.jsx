@@ -200,14 +200,14 @@ function createChatModal({ closeModal, userPassword }) {
 
               <button
                 type="submit"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring focus:border-blue-300 mr-2"
+                className="bg-gray-700 mr-2 text-white px-4 py-2 rounded-md hover:bg-gray-800 transition-all ease-in-out duration-300"
               >
                 Create
               </button>
 
               <button
                 onClick={closeModal}
-                className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring focus:border-red-300"
+                className="bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700 transition-all ease-in-out duration-300"
               >
                 Close
               </button>
