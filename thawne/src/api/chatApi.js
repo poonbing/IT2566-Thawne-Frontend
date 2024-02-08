@@ -53,6 +53,7 @@ async function submitMessage(content) {
     socket.on('return_message_submission', (data) => {
       console.log(data)
       resolve(data);
+      
     });
     socket.on('error_message_submission', (error) => {
       reject(new Error(`Error sending message: ${error.message}`));
