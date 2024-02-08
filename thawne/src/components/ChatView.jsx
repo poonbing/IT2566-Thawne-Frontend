@@ -6,38 +6,10 @@ import useToken from "../hooks/useToken";
 import { getMessageList } from "../api/chatApi";
 
 function ChatView({ selectedChat, currentChatInfo }) {
-  const [messages, setMessages] = useState([]);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [messagePresent, setMessagePresent] = useState(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (selectedChat) {
-        const newMessages = {
-          chatId: currentChatInfo.chat_id,
-          userId: token,
-          securityLevel: currentChatInfo.seclvl,
-          pass: currentChatInfo.pass,
-        };
-
-        console.log(currentChatInfo);
-
-        try {
-          const hello = await getMessageList(newMessages);
-          setMessages(hello);
-          setMessagePresent(true);
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        setMessages([]);
-      }
-    };
-
-    fetchData();
-  }, [selectedChat, isFileUploaded]);
 
   const checkSecurity = (level) => {
     if (level === "Top Secret") {
@@ -84,7 +56,7 @@ function ChatView({ selectedChat, currentChatInfo }) {
           </div>
           {!isFileUploaded && (
             <MessageList
-              messages={messages}
+              currentChatInfo={currentChatInfo}
               messagePresent={messagePresent}
               setMessagePresent={setMessagePresent}
             />

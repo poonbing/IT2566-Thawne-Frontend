@@ -1,9 +1,48 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import useToken from "../../hooks/useToken";
 import extractFirstKey from "../../helpers/extractFirstKey";
+import { socket } from "../../socket";
 
-function MessageList({ messages }) {
-  console.log(messages);
+function MessageList({ currentChatInfo }) {
+  console.log(currentChatInfo);
+  const [messagesList, setMessagesList] = useState([]);
+
+  const handleChatMessage = (messages) => {
+    const messageList = messages ? Object.values(messages) : [];
+    console.log("The message list", messageList);
+    checkMessageList(messageList); 
+    setMessagesList(messageList);
+  };
+
+  useEffect(() => {
+    console.log("Ran in here");
+    const chatInfo = {
+      chatId: currentChatInfo.chat_id,
+      userId: token,
+      securityLevel: currentChatInfo.seclvl,
+      pass: currentChatInfo.pass,
+    };
+
+    socket.emit("get_message_list", chatInfo);
+
+    const handleMessageReturn = (data) => {
+      console.log("The data is ", data);
+      handleChatMessage(data);
+    };
+
+    const handleErrorMessage = (error) => {
+      setMessagesList([]);
+    };
+
+    socket.on("return_message_list", handleMessageReturn);
+    socket.on("error_message_list", handleErrorMessage);
+
+    return () => {
+      socket.off("return_message_list", handleMessageReturn);
+      socket.off("error_message_list", handleErrorMessage);
+    };
+  }, []);
+
   const weekday = [
     "Sunday",
     "Monday",
@@ -17,8 +56,6 @@ function MessageList({ messages }) {
   const todayDate = new Date();
   const [dateStamp, setdateStamp] = useState(todayDate.getDate());
   const { token } = useToken();
-
-  const messageList = messages ? Object.values(messages) : [];
 
   const checkMessageList = (message) => {
     if (message.length < 1) {
@@ -132,11 +169,10 @@ function MessageList({ messages }) {
         backgroundImage: `url("/images/chatWallpaper.jpg")`,
       }}
     >
-      {checkMessageList(messageList)}
-      {messageList.length > 0 && (
+      {messagesList.length > 0 && (
         <>
           <ul className="space-y-2">
-            {messageList.map((message, index) => (
+            {messagesList.map((message, index) => (
               <div>
                 {getDateStamp(message.date)}
                 <li
