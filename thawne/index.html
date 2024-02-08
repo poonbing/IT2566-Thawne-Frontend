@@ -16,11 +16,11 @@
     </div>
     <div className="bg-white">
       <video id="cam_input" hidden height="240" width="320"></video>
-      <canvas id="canvas_output" hidden></canvas>
-      <h1 id="statusText" hidden></h1>
+      <canvas id="canvas_output" hidden ></canvas>
+      <h1 id="statusText" hidden ></h1>
     </div>
 
-    <script type="module" src="/src/main.jsx"></script>
+    <script type="module" src="src/main.jsx"></script>
      <script type="text/JavaScript">
       function openCvReady() {
         cv['onRuntimeInitialized']=()=>{
@@ -72,11 +72,12 @@
               }
   
               if (lastCountOfMoreThanOneFace > 12) {
+                  window.electronAPI.setTitle("Multiple faces")
                   window.location.replace("redirectpage.html")
-                  statusText.innerHTML = 'Fuck off!'
+                  statusText.innerHTML = 'WARNING!'
               }
               else {
-                  statusText.innerHTML = 'I love you!'
+                  statusText.innerHTML = 'OK!'
               }
   
   

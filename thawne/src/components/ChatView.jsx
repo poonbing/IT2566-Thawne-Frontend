@@ -6,38 +6,10 @@ import useToken from "../hooks/useToken";
 import { getMessageList } from "../api/chatApi";
 
 function ChatView({ selectedChat, currentChatInfo }) {
-  const [messages, setMessages] = useState([]);
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
   const [isFileUploaded, setIsFileUploaded] = useState(false);
-  const [messagePresent, setMessagePresent] = useState(null)
-
-  useEffect(() => {
-    const fetchData = async () => {
-      if (selectedChat) {
-        const newMessages = {
-          chatId: currentChatInfo.chat_id,
-          userId: token,
-          securityLevel: currentChatInfo.seclvl,
-          pass: currentChatInfo.pass,
-        };
-
-        console.log(currentChatInfo);
-
-        try {
-          const hello = await getMessageList(newMessages);
-          setMessages(hello);
-          setMessagePresent(true)
-        } catch (error) {
-          console.error(error);
-        }
-      } else {
-        setMessages([]);
-      }
-    };
-
-    fetchData();
-  }, [selectedChat, isFileUploaded]);
+  const [messagePresent, setMessagePresent] = useState(null);
 
   const checkSecurity = (level) => {
     if (level === "Top Secret") {
@@ -82,12 +54,17 @@ function ChatView({ selectedChat, currentChatInfo }) {
             <span className="absolute w-3 h-3 bg-green-600 rounded-full left-10 top-3"></span>
             {checkSecurity(selectedChat.security_level)}
           </div>
-          {!isFileUploaded && <MessageList messages={messages} messagePresent={messagePresent} setMessagePresent={setMessagePresent}/>}
+          {!isFileUploaded && (
+            <MessageList
+              currentChatInfo={currentChatInfo}
+              messagePresent={messagePresent}
+              setMessagePresent={setMessagePresent}
+            />
+          )}
           <div className="bg-zinc-800">
             <MessageInput
               currentChatInfo={currentChatInfo}
               setIsFileUploaded={setIsFileUploaded}
-    
             />
           </div>
         </div>

@@ -3,6 +3,7 @@ import socketIOClient from 'socket.io-client';
 
 async function reflectAllChats(userId, password) {
   console.log(password);
+
   return new Promise((resolve, reject) => {
     try {
       const socket = socketIOClient('http://localhost:5000/chat');
@@ -87,6 +88,44 @@ async function checkFileName(file) {
   });
 }
 
+async function fileScan(file) {
+  return new Promise((resolve, reject) => {
+    const socket = socketIOClient('http://localhost:5000/filescan');
+    socket.emit('on_queue_file', file);
+    socket.on('return_filename_check', (data) => {
+      socket.disconnect();
+      resolve(data); 
+    });
+    socket.on('error_message_list', (error) => {
+      socket.disconnect();
+      reject(new Error(`Error with file upload: ${error.message}`));
+    });
+    socket.on('return_file_upload', (message) => {
+      socket.disconnect();
+      alert(` Signed URL. \n Details: ${message.url}`)
+      console.log(message.url)
+      const uploadResponse = fetch(message.url, {
+        method: 'PUT',
+        body: file.file,
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+      }
+      });
+      if (uploadResponse.ok) {
+        console.log('File uploaded successfully!');
+      } else {
+        console.error('Error uploading file:', uploadResponse.statusText);
+      }
+    });
+    
+    socket.on('inappropriate_level', (error) => {
+      socket.disconnect();
+      alert(` File upload is not allowed. \n Granted security level: ${error}`)
+    });
+  });
+}
+
+
 async function fileUpload(file) {
   return new Promise((resolve, reject) => {
     const socket = socketIOClient('http://localhost:5000/chat');
@@ -118,7 +157,6 @@ async function fileUpload(file) {
     });
   });
 }
-
 
 
 export { reflectAllChats, createChat, submitMessage, getMessageList, fileUpload };

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification } = require('electron');
 const path = require('path');
  
 const isDev = process.env.IS_DEV == "true" ? true : false;
@@ -8,20 +8,25 @@ function createWindow() {
     width: 1024,
     height: 650,
     frame: true,
-    icon: path.join(__dirname, '..', 'public', 'icons', 'icon.ico'),
+    icon: path.join(__dirname, 'public', 'icons', 'icon.ico'),
+    autoHideMenuBar: true,
 
     
 
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      contextIsolation: true,
+      nodeIntegration: true,
+      preload: path.join(__dirname, './electron/preload.js'),
+
     },
   });
 
   ipcMain.on('set-title', (event, title) => {
-    const webContents = event.sender
-    const win = BrowserWindow.fromWebContents(webContents)
-    win.setTitle(title)
+      new Notification({ 
+        title: title, 
+        body: title ,
+        icon: path.join(__dirname, 'public', 'icons', 'icon.ico'),
+        silent : false,
+      }).show()
   })
 
 
@@ -39,7 +44,15 @@ function createWindow() {
   );
 
 }
- 
+
+if (process.platform === 'win32')
+{
+    app.setAppUserModelId(app.name);
+}
+
+
+app.setUserTasks([
+])
 
 app.whenReady().then(() => {
   createWindow()

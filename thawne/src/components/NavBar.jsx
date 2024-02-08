@@ -7,6 +7,7 @@ import useToken from "../hooks/useToken";
 function NavBar({ openModal }) {
   const { logout } = useToken();
 
+
   const handleLogout = () => {
     logout();
     window.location.reload();
