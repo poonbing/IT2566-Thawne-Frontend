@@ -13,6 +13,8 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
   const [showModal, setShowModal] = useState(false);
   const [showSecurityModal, setSecurityModal] = useState(false);
   const [sensitiveDataList, setSensitiveDataList] = useState([]);
+  const [maskSensitiveList, setMaskSensitiveList] = useState([]);
+  const [maskOption, setMaskOption] = useState(false)
   const [editedvalues, setEditedValues] = useState(null);
   const [confirm, setConfirm] = useState(false);
   const fileInputRef = useRef(null);
@@ -46,10 +48,13 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       };
       console.log(editedvalues)
       let sensitiveList = textScanning(values.message);
+      let maskList = maskScanning(values.message);
+      console.log(maskList)
       
       if (sensitiveList.length > 0) {
         setShowModal(true);
         setSensitiveDataList(sensitiveList);
+        setMaskSensitiveList(maskList)
         setEditedValues(editedvalues);
       } else if (currentChatInfo.seclvl == "Sensitive" && values.file) {
         setSecurityModal(true);
@@ -65,6 +70,19 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       }
     }
   };
+
+
+  const sendMaskMessage = () => {
+    if (maskSensitiveList.length > 0){
+      
+      let maskMessage = editedvalues.message
+      sensitiveDataList.forEach((sensitiveWord, index) => {
+        maskMessage = maskMessage.replace(sensitiveWord, maskSensitiveList[index])
+      })
+      editedvalues.message = maskMessage
+      setConfirm(true)
+    }
+  }
 
   const handleEmojiClick = (emojiData) => {
     setFieldValue("message", messageText + emojiData.emoji);
@@ -91,18 +109,39 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         }
       }
     }
-
+    
     return sensitiveList;
   };
+
+  const maskScanning = (text) => {
+    const maskList = []
+    const words = text.split(/\s+/); // Split the text into words
+    for (let word of words) {
+      for (let pattern of sensitiveData) {
+        const match = pattern.test(word);
+        if (match) {
+          const last4Characters = word.slice(-4)
+          const masked = 'x'.repeat(word.length - 4)
+          const maskedWord = masked + last4Characters
+          maskList.push(maskedWord);
+        }
+      }
+    }
+    
+    return maskList;
+  };
+
+  
 
   useEffect(() => {
     if (editedvalues && confirm) {
       if (editedvalues.message === ''){
         fileUpload(editedvalues);
+        alert('File uploaded')
       }
       else{
         submitMessage(editedvalues)
-        console.log("submit message api called")
+        console.log(editedvalues)
       }
       
       setEditedValues(null);
@@ -201,10 +240,10 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       {showModal && (
         <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-gray-800 bg-opacity-50">
           <div className="bg-white p-6 rounded-md">
-            <h2>Sensitive Data detected!</h2>
+            <h2 className="font-bold">Sensitive Data detected!</h2>
             {sensitiveDataList.length > 0 ? (
               <div>
-                <p>The following sensitive data was found:</p>
+                <p className="font-semibold">The following sensitive data was found:</p>
                 <ul>
                   {sensitiveDataList.map((data, index) => (
                     <li key={index} className="italic">
@@ -215,6 +254,21 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
               </div>
             ) : (
               <p>No sensitive data detected.</p>
+            )}
+
+            {maskSensitiveList.length > 0 ? (
+              <div className="mt-2">
+                <p className="font-semibold">Send message with mask instead:</p>
+                <ul>
+                  {maskSensitiveList.map((data, index) => (
+                    <li key={index} className="italic">
+                      {data}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : (
+              <p>No masked data detected.</p>
             )}
 
             <p className="font-bold mt-4">
@@ -230,6 +284,16 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 className="bg-red-600 text-white m-2 px-4 py-2 rounded-md hover:bg-red-700 transition-all ease-in-out duration-300"
               >
                 Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowModal(false);
+                  sendMaskMessage();
+                }}
+                className="bg-gray-700 text-white m-2 px-4 py-2 rounded-md hover:bg-gray-800 transition-all ease-in-out duration-300"
+              >
+                Mask it
               </button>
               <button
                 type="button"
