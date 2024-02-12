@@ -6,6 +6,7 @@ import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
 import RotateLoader from "react-spinners/RotateLoader";
+import { logEvent } from "../api/logApi";
 
 function ChatPage({
   handleChatSelect,
@@ -53,11 +54,20 @@ function ChatPage({
             seclvl: chatList[verifyChatModalIndex].security_level,
             pass: password,
           });
+          window.FlashMessage.success('Chat user authenticated.')
           resolve(data);
         });
         socket.on("error_chat_user", (error) => {
           socket.disconnect();
           console.log(error)
+          const logInfo = {
+            userId: token,
+            password: userPassword.password,
+            type: "Chat login",
+            location: chatList[verifyChatModalIndex].security_level + ' Channel',
+            context: 'Failed login attempt'
+          }
+          logEvent(logInfo)
           reject(error);
         });
       });
@@ -86,6 +96,7 @@ function ChatPage({
           <ChatView
             selectedChat={selectedChat}
             currentChatInfo={currentChatInfo}
+            userPassword={userPassword}
           />
         </div>
       </div>

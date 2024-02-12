@@ -4,7 +4,7 @@ import MessageInput from "./ChatView/MessageInput";
 import ChatDetails from "./ChatDetails";
 import useToken from "../hooks/useToken";
 
-function ChatView({ selectedChat, currentChatInfo }) {
+function ChatView({ selectedChat, currentChatInfo, userPassword }) {
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
   const [isFileUploaded, setIsFileUploaded] = useState(false);
@@ -64,6 +64,7 @@ function ChatView({ selectedChat, currentChatInfo }) {
             <MessageInput
               currentChatInfo={currentChatInfo}
               setIsFileUploaded={setIsFileUploaded}
+              userPassword={userPassword}
             />
           </div>
         </div>

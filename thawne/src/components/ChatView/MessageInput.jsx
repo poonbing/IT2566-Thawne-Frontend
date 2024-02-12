@@ -6,18 +6,38 @@ import { submitMessage } from "../../api/chatApi";
 import { fileUpload } from "../../api/chatApi";
 import { PreviewImage } from "./PreviewImage";
 import Tooltip from '@mui/material/Tooltip';
+import { createWorker } from 'tesseract.js';
+import { logEvent } from "../../api/logApi";
 
-function MessageInput({ currentChatInfo, setIsFileUploaded }) {
+function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const [showSecurityModal, setSecurityModal] = useState(false);
   const [sensitiveDataList, setSensitiveDataList] = useState([]);
   const [maskSensitiveList, setMaskSensitiveList] = useState([]);
-  const [maskOption, setMaskOption] = useState(false)
   const [editedvalues, setEditedValues] = useState(null);
   const [confirm, setConfirm] = useState(false);
   const fileInputRef = useRef(null);
   const [fileSecurity, setFileSecurity] = useState("Open");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [textResult, setTextResult] = useState("");
+
+
+  const convertImageToText = async () => {
+    try{
+      const worker = await createWorker('eng');
+      const { data } = await worker.recognize(selectedImage)
+      setTextResult(data.text)
+    } catch (error){
+      console.log("Error proccessing OCR:", error)
+    }
+    
+  }
+
+  useEffect(() => {
+    convertImageToText();
+  }, [selectedImage])
+  
 
   const initialValues = {
     message: "",
@@ -35,7 +55,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
 
 
   const handleSendMessage = (values, { resetForm }) => {
-    if (values.message.trim() !== "" || values.file !== null) {
+    if (values.message.trim() !== "" || values.file !== "") {
       const editedvalues = {
         chatId: currentChatInfo.chat_id,
         userId: currentChatInfo.userId,
@@ -48,13 +68,18 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
       console.log(editedvalues)
       let sensitiveList = textScanning(values.message);
       let maskList = maskScanning(values.message);
-      console.log(maskList)
+      let ocrList = textScanning(textResult)
+      
       
       if (sensitiveList.length > 0) {
         setShowModal(true);
         setSensitiveDataList(sensitiveList);
         setMaskSensitiveList(maskList)
         setEditedValues(editedvalues);
+      } else if (ocrList.length > 0){
+        setShowModal(true)
+        setSensitiveDataList(ocrList)
+        setEditedValues(editedvalues)
       } else if (currentChatInfo.seclvl == "Sensitive" && values.file) {
         setSecurityModal(true);
         setEditedValues(editedvalues);
@@ -73,7 +98,6 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
 
   const sendMaskMessage = () => {
     if (maskSensitiveList.length > 0){
-      
       let maskMessage = editedvalues.message
       sensitiveDataList.forEach((sensitiveWord, index) => {
         maskMessage = maskMessage.replace(sensitiveWord, maskSensitiveList[index])
@@ -136,15 +160,36 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
     if (editedvalues && confirm) {
       if (editedvalues.message === ''){
         fileUpload(editedvalues);
-        alert('File uploaded')
+        if (sensitiveDataList && currentChatInfo.seclvl == 'Open'){
+          const logInfo = {
+            userId: currentChatInfo.userId,
+            password: userPassword.password,
+            type: 'Message.',
+            location: 'Open channel.',
+            context: "Sensitive data sent by image file."
+          }
+          console.log(logInfo)
+          logEvent(logInfo)
+        }
       }
       else{
         submitMessage(editedvalues)
-        console.log(editedvalues)
+        if (sensitiveDataList && currentChatInfo.seclvl == 'Open'){
+          const logInfo = {
+            userId: currentChatInfo.userId,
+            password: userPassword.password,
+            type: 'Message.',
+            location: 'Open channel.',
+            context: "Sensitive data sent."
+          }
+          console.log(logInfo)
+          logEvent(logInfo)
+        }
+        
       }
-      
       setEditedValues(null);
       setConfirm(false);
+      setTextResult("");
     }
   }, [editedvalues, confirm]);
 
@@ -161,6 +206,11 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
         {({ setFieldValue, errors, values }) => (
           <Form>
             {values.file && <PreviewImage file={values.file} />}
+            {textResult && (
+              <div className="text-center text-white text-2xl">
+                <p>{textResult}</p>
+              </div>
+            )}
 
             <div className="flex items-center justify-between w-full p-3 border-t border-black">
               <button
@@ -186,6 +236,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 onChange={(e) => {
                   setFieldValue("file", e.target.files[0]);
                   setIsFileUploaded(true);
+                  setSelectedImage(e.target.files[0]);
                 }}
                 ref={fileInputRef}
                 hidden
@@ -200,6 +251,8 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                       setFieldValue("file", "");
                       fileInputRef.current.value = "";
                       setIsFileUploaded(false);
+                      setTextResult("");
+
                     }}
                   >
                     <ion-icon name="close-circle-outline"></ion-icon>
@@ -208,8 +261,6 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 
               ) : null}
             
-
-              {/* {errors.file && <p style={{ color: "red" }}>{errors.file}</p>} */}
               <Field
                 type="text"
                 placeholder="Message"
@@ -279,6 +330,8 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                 type="button"
                 onClick={() => {
                   setShowModal(false);
+                  setMaskSensitiveList([]);
+                  setTextResult("");
                 }}
                 className="bg-red-600 text-white m-2 px-4 py-2 rounded-md hover:bg-red-700 transition-all ease-in-out duration-300"
               >
@@ -290,6 +343,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded }) {
                   setShowModal(false);
                   sendMaskMessage();
                 }}
+                hidden={maskSensitiveList.length == 0}
                 className="bg-gray-700 text-white m-2 px-4 py-2 rounded-md hover:bg-gray-800 transition-all ease-in-out duration-300"
               >
                 Mask it
