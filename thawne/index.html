@@ -72,8 +72,14 @@
             if (!dialogShown) {
                 electron.showDialog();
                 dialogShown = true;
+        
+                setTimeout(() => {
+                    dialogShown = false;
+                    setTimeout(showDialog, 30000);
+                }, 30000); 
             }
-           }
+        }
+        
 
           function processVideo() {
               let begin = Date.now();
@@ -113,7 +119,7 @@
                   lastCountOfMoreThanOneFace = 0
               }
 
-              if (lastCountOfMoreThanOneFace > 12 && safe_mode === true) {
+              if (lastCountOfMoreThanOneFace > 1 && safe_mode === true) {
                 statusText.innerHTML = 'Fuck off!'
                 showDialog()
 
