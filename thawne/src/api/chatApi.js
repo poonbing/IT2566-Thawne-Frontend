@@ -46,6 +46,16 @@ async function createChat(chatValues) {
   });
 }
 
+async function deleteChat(chatValues) {
+  return new Promise((resolve) => {
+    const socket = socketIOClient('http://localhost:5000/operation');
+    socket.emit('delete_chat', chatValues);
+    const data = "Pending chat deletion request...";
+    resolve(data);
+
+  });
+}
+
 async function submitMessage(content) {
   return new Promise((resolve, reject) => {
     const socket = socketIOClient('http://localhost:5000/chat');
@@ -143,4 +153,4 @@ async function fileUpload(file) {
 }
 
 
-export { reflectAllChats, createChat, submitMessage, getMessageList, fileUpload };
+export { reflectAllChats, createChat, deleteChat, submitMessage, getMessageList, fileUpload };

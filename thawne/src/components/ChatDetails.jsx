@@ -1,7 +1,20 @@
 import React from "react";
 import FileCarousel from "./ChatView/FileCarousel";
+import { deleteChat } from "../api/chatApi";
+import useToken from "../hooks/useToken";
 
-function ChatDetails({ selectedChat, onClose }) {
+function ChatDetails({ selectedChat, onClose, userPassword }) {
+  const { token } = useToken();
+  const values = {
+    userId: token || "",
+    chatId: selectedChat.chat_id || "",
+    userPassword: userPassword.password,
+  };
+
+  const handleChatDelete = () => {
+    deleteChat(values);
+  };
+
   const checkSecurity = (level) => {
     if (level === "Top Secret") {
       return (
@@ -126,8 +139,11 @@ function ChatDetails({ selectedChat, onClose }) {
         </div>
 
         <div className="flex-grow">
-          <button className="text-red-500 w-full px-4 py-2 ">
-            <ion-icon name="exit-outline"></ion-icon> Exit Group
+          <button
+            className="text-red-500 w-full px-4 py-2 "
+            onClick={handleChatDelete}
+          >
+            <ion-icon name="exit-outline"></ion-icon> Delete Group
           </button>
           <button className="text-red-500 w-full px-4 py-2">
             <ion-icon name="megaphone-outline"></ion-icon> Report Group
