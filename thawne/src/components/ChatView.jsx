@@ -64,6 +64,7 @@ function ChatView({ selectedChat, currentChatInfo, userPassword }) {
             <MessageInput
               currentChatInfo={currentChatInfo}
               setIsFileUploaded={setIsFileUploaded}
+              userPassword={userPassword}
             />
           </div>
         </div>

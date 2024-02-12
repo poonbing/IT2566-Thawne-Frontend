@@ -6,6 +6,7 @@ import ChatList from "../components/ChatList";
 import ChatView from "../components/ChatView";
 import VerifyChatModal from "../components/modals/VerifyChatModal";
 import RotateLoader from "react-spinners/RotateLoader";
+import { logEvent } from "../api/logApi";
 
 function ChatPage({
   handleChatSelect,
@@ -30,36 +31,46 @@ function ChatPage({
   };
 
   const handlePasswordSubmit = async (password) => {
-    return new Promise((resolve, reject) => {
-      const socket = socketIOClient("http://localhost:5000/auth");
-      socket.emit("verify_chat_user", {
-        uid: token,
-        cid: chatList[verifyChatModalIndex].chat_id,
-        seclvl: chatList[verifyChatModalIndex].security_level,
-        pass: password,
-      });
-      socket.on("return_chat_user", (data) => {
-        socket.disconnect();
-        console.log(data);
-        setUnlock(true);
-        closeVerifyChatModal();
-        const selectedChat = chatList[verifyChatModalIndex];
-        handleChatSelect(selectedChat);
-        setActiveChat(verifyChatModalIndex);
-        setcurrentChatInfo({
-          chat_id: chatList[verifyChatModalIndex].chat_id,
-          userId: token,
+    
+      return new Promise((resolve, reject) => {
+        const socket = socketIOClient("http://localhost:5000/auth");
+        socket.emit("verify_chat_user", {
+          uid: token,
+          cid: chatList[verifyChatModalIndex].chat_id,
           seclvl: chatList[verifyChatModalIndex].security_level,
           pass: password,
         });
-        resolve(data);
+        socket.on("return_chat_user", (data) => {
+          socket.disconnect();
+          console.log(data)
+          setUnlock(true)
+          closeVerifyChatModal();
+          const selectedChat = chatList[verifyChatModalIndex];
+          handleChatSelect(selectedChat);
+          setActiveChat(verifyChatModalIndex);
+          setcurrentChatInfo({
+            chat_id: chatList[verifyChatModalIndex].chat_id,
+            userId: token,
+            seclvl: chatList[verifyChatModalIndex].security_level,
+            pass: password,
+          });
+          window.FlashMessage.success('Chat user authenticated.')
+          resolve(data);
+        });
+        socket.on("error_chat_user", (error) => {
+          socket.disconnect();
+          console.log(error)
+          const logInfo = {
+            userId: token,
+            password: userPassword.password,
+            type: "Chat login",
+            location: chatList[verifyChatModalIndex].security_level + ' Channel',
+            context: 'Failed login attempt'
+          }
+          logEvent(logInfo)
+          reject(error);
+        });
       });
-      socket.on("error_chat_user", (error) => {
-        socket.disconnect();
-        console.log(error);
-        reject(error);
-      });
-    });
   };
 
   return (
