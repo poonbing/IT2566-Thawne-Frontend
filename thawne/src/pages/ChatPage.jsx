@@ -30,37 +30,36 @@ function ChatPage({
   };
 
   const handlePasswordSubmit = async (password) => {
-    
-      return new Promise((resolve, reject) => {
-        const socket = socketIOClient("http://localhost:5000/auth");
-        socket.emit("verify_chat_user", {
-          uid: token,
-          cid: chatList[verifyChatModalIndex].chat_id,
+    return new Promise((resolve, reject) => {
+      const socket = socketIOClient("http://localhost:5000/auth");
+      socket.emit("verify_chat_user", {
+        uid: token,
+        cid: chatList[verifyChatModalIndex].chat_id,
+        seclvl: chatList[verifyChatModalIndex].security_level,
+        pass: password,
+      });
+      socket.on("return_chat_user", (data) => {
+        socket.disconnect();
+        console.log(data);
+        setUnlock(true);
+        closeVerifyChatModal();
+        const selectedChat = chatList[verifyChatModalIndex];
+        handleChatSelect(selectedChat);
+        setActiveChat(verifyChatModalIndex);
+        setcurrentChatInfo({
+          chat_id: chatList[verifyChatModalIndex].chat_id,
+          userId: token,
           seclvl: chatList[verifyChatModalIndex].security_level,
           pass: password,
         });
-        socket.on("return_chat_user", (data) => {
-          socket.disconnect();
-          console.log(data)
-          setUnlock(true)
-          closeVerifyChatModal();
-          const selectedChat = chatList[verifyChatModalIndex];
-          handleChatSelect(selectedChat);
-          setActiveChat(verifyChatModalIndex);
-          setcurrentChatInfo({
-            chat_id: chatList[verifyChatModalIndex].chat_id,
-            userId: token,
-            seclvl: chatList[verifyChatModalIndex].security_level,
-            pass: password,
-          });
-          resolve(data);
-        });
-        socket.on("error_chat_user", (error) => {
-          socket.disconnect();
-          console.log(error)
-          reject(error);
-        });
+        resolve(data);
       });
+      socket.on("error_chat_user", (error) => {
+        socket.disconnect();
+        console.log(error);
+        reject(error);
+      });
+    });
   };
 
   return (
@@ -86,6 +85,7 @@ function ChatPage({
           <ChatView
             selectedChat={selectedChat}
             currentChatInfo={currentChatInfo}
+            userPassword={userPassword}
           />
         </div>
       </div>
