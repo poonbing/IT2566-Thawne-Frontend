@@ -47,6 +47,7 @@ function createWindow() {
             mainWindow.loadFile('public/redirectpage.html');
         } else {
             mainWindow.webContents.send('dialog-closed');
+            mainWindow.webContents.send('set-safe-mode', false);
         }
     }).catch((err) => {
         console.error(err);

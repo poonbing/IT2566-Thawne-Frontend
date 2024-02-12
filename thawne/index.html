@@ -56,11 +56,17 @@
 
           let safe_mode = true;
 
+
           let current_time = Date.now()
           let element = document.getElementById('canvas_output');
           //if (safe_mode == true){
             //element.style.border = '10px solid lightgreen';
           //}
+
+          electron.onUpdateCounter((value) => {
+            safe_mode = false;
+            current_time = Date.now()
+          })
 
           function showDialog() {
             if (!dialogShown) {
