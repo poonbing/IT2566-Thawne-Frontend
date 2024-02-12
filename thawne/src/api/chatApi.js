@@ -32,17 +32,9 @@ async function createChat(chatValues) {
   return new Promise((resolve, reject) => {
     const socket = socketIOClient('http://localhost:5000/operation');
     socket.emit('create_chat', chatValues);
-    socket.on('return_chat_creation', (data) => {
-      socket.disconnect();
-      console.log(data)
-      resolve(data);
-    });
+    const data = "Pending chat creation request...";
+    resolve(data);
 
-    socket.on('error_chat_creation', (error) => {
-      socket.disconnect();
-      console.log(`Error creating chat: ${error}`)
-      reject(new Error(`Error creating chat: ${error.message}`));
-    });
   });
 }
 

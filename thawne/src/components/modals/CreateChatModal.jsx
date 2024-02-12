@@ -1,31 +1,31 @@
-import React from 'react';
-import { object, string, array, boolean, number } from 'yup';
-import { Formik, Form, Field, FieldArray, useFormik } from 'formik';
-import {Grid, Typography, Button,} from '@mui/material'
-import * as Yup from 'yup';
+import React from "react";
+import { object, string, array, boolean, number } from "yup";
+import { Formik, Form, Field, FieldArray, useFormik } from "formik";
+import { Grid, Typography, Button } from "@mui/material";
+import * as Yup from "yup";
 
-import useToken from '../../hooks/useToken';
-import { createChat } from '../../api/chatApi';
-
-
-
-
+import useToken from "../../hooks/useToken";
+import { createChat } from "../../api/chatApi";
 
 function createChatModal({ closeModal, userPassword }) {
   const { token } = useToken();
 
   const chatSchema = Yup.object({
-    userId: Yup.mixed().required('Required'),
-    chatName: Yup.string().required('Required').max(30, 'Maximum length reached'),
-    chatDescription: Yup.string().max(50, 'Maximum length reached'),
-    securityLevel: Yup.string().oneOf(['Open', 'Sensitive', 'Top Secret']).required('Choose Security Level'),
-    listOfUsers: Yup.array().min(3, 'Minimum of 3 users in Group Chat').max(10, 'Maximum of 10 users allowed').required('Need users to create'),
+    userId: Yup.mixed().required("Required"),
+    chatName: Yup.string()
+      .required("Required")
+      .max(30, "Maximum length reached"),
+    chatDescription: Yup.string().max(50, "Maximum length reached"),
+    securityLevel: Yup.string()
+      .oneOf(["Open", "Sensitive", "Top Secret"])
+      .required("Choose Security Level"),
+    listOfUsers: Yup.array()
+      .min(3, "Minimum of 3 users in Group Chat")
+      .max(10, "Maximum of 10 users allowed")
+      .required("Need users to create"),
     generalRead: Yup.boolean().default(true),
     generalWrite: Yup.boolean().default(true),
   });
-
-  
-
 
   return (
     <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center">
@@ -34,17 +34,16 @@ function createChatModal({ closeModal, userPassword }) {
         <h1 className="text-2xl font-bold mb-4 text-black">Create Chat</h1>
         <Formik
           initialValues={{
-            userId: token || '',
-            chatName: '',
-            chatDescription: '',
-            securityLevel: '',
-            listOfUsers: [''],
+            userId: token || "",
+            chatName: "",
+            chatDescription: "",
+            securityLevel: "",
+            listOfUsers: [""],
             generalRead: true,
             generalWrite: true,
-            userPassword: userPassword.password
+            userPassword: userPassword.password,
           }}
           validationSchema={chatSchema}
-
           onSubmit={async (values) => {
             console.log(values);
             try {
@@ -58,7 +57,10 @@ function createChatModal({ closeModal, userPassword }) {
           {({ errors, touched, values }) => (
             <Form className="space-y-4">
               <div className="flex-col hidden">
-                <label htmlFor="userId" className="text-sm text-black font-semibold">
+                <label
+                  htmlFor="userId"
+                  className="text-sm text-black font-semibold"
+                >
                   User Id
                 </label>
                 <Field
@@ -73,7 +75,10 @@ function createChatModal({ closeModal, userPassword }) {
                 ) : null}
               </div>
               <div className="flex flex-col">
-                <label htmlFor="chatName" className="text-sm text-black font-semibold">
+                <label
+                  htmlFor="chatName"
+                  className="text-sm text-black font-semibold"
+                >
                   Chat Name
                 </label>
                 <Field
@@ -89,7 +94,10 @@ function createChatModal({ closeModal, userPassword }) {
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="chatDescription" className="text-sm text-black font-semibold">
+                <label
+                  htmlFor="chatDescription"
+                  className="text-sm text-black font-semibold"
+                >
                   Chat Description
                 </label>
                 <Field
@@ -105,14 +113,16 @@ function createChatModal({ closeModal, userPassword }) {
               </div>
 
               <div className="flex flex-col">
-                <label htmlFor="securityLevel" className="text-sm text-black font-semibold">
+                <label
+                  htmlFor="securityLevel"
+                  className="text-sm text-black font-semibold"
+                >
                   Security Level
                 </label>
                 <Field
                   as="select"
                   id="securityLevel"
                   name="securityLevel"
-                  
                   className="border rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
                 >
                   <option value="" label="Select Security Level" />
@@ -135,37 +145,50 @@ function createChatModal({ closeModal, userPassword }) {
                   name="listOfUsers"
                   className="border rounded px-3 py-2 mt-1 focus:outline-none focus:ring focus:border-blue-300"
                 /> */}
-                <FieldArray name='listOfUsers'>
-                  {({push, remove,}) => (
-                      <React.Fragment>
-                            <Grid item>
-                              <Typography variant="p" className='text-gray-800'>User's ID</Typography>
-                            </Grid>
+                <FieldArray name="listOfUsers">
+                  {({ push, remove }) => (
+                    <React.Fragment>
+                      <Grid item>
+                        <Typography variant="p" className="text-gray-800">
+                          User's ID
+                        </Typography>
+                      </Grid>
 
-                            {values.listOfUsers.map((_, index) =>(
-                              <Grid container item key={index}>
-                                <Grid item xs={12} sm="auto">
-                                    <Field  name={`listOfUsers[${index}]`}
-                                    type="text" 
-                                    placeholder="User'ID"
-                                    className="border rounded py-1 focus:outline-none focus:ring focus:border-blue-300"/>
-                                </Grid>
+                      {values.listOfUsers.map((_, index) => (
+                        <Grid container item key={index}>
+                          <Grid item xs={12} sm="auto">
+                            <Field
+                              name={`listOfUsers[${index}]`}
+                              type="text"
+                              placeholder="User'ID"
+                              className="border rounded py-1 focus:outline-none focus:ring focus:border-blue-300"
+                            />
+                          </Grid>
 
-                                <Grid item xs={12} sm="auto">
-                                  <Button variant="outlined" color='error' size='small' onClick={() => remove(index)}>
-                                    Remove
-                                  </Button>
-                                </Grid>
-                              </Grid>
-                            ))}
-                            <Grid item xs={12} sm="auto">
-                                  <Button variant='text' size='small' onClick={() => push()}>Add</Button>
-                            </Grid>
-                      </React.Fragment>
+                          <Grid item xs={12} sm="auto">
+                            <Button
+                              variant="outlined"
+                              color="error"
+                              size="small"
+                              onClick={() => remove(index)}
+                            >
+                              Remove
+                            </Button>
+                          </Grid>
+                        </Grid>
+                      ))}
+                      <Grid item xs={12} sm="auto">
+                        <Button
+                          variant="text"
+                          size="small"
+                          onClick={() => push()}
+                        >
+                          Add
+                        </Button>
+                      </Grid>
+                    </React.Fragment>
                   )}
-
                 </FieldArray>
-      
 
                 {errors.listOfUsers && touched.listOfUsers ? (
                   <div className="text-red-500">{errors.listOfUsers}</div>
@@ -177,7 +200,6 @@ function createChatModal({ closeModal, userPassword }) {
                   type="checkbox"
                   id="generalRead"
                   name="generalRead"
-                  
                   className="mr-2"
                 />
                 <label htmlFor="generalRead" className="text-sm text-black">
@@ -190,7 +212,6 @@ function createChatModal({ closeModal, userPassword }) {
                   type="checkbox"
                   id="generalWrite"
                   name="generalWrite"
-                  
                   className="mr-2"
                 />
                 <label htmlFor="generalWrite" className="text-sm text-black">

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import useToken from "../../hooks/useToken";
 import extractFirstKey from "../../helpers/extractFirstKey";
 import { socket } from "../../socket";
+import { Link } from "react-router-dom";
 
 function MessageList({ currentChatInfo }) {
   console.log(currentChatInfo);
@@ -10,12 +11,11 @@ function MessageList({ currentChatInfo }) {
   const handleChatMessage = (messages) => {
     const messageList = messages ? Object.values(messages) : [];
     console.log("The message list", messageList);
-    checkMessageList(messageList); 
+    checkMessageList(messageList);
     setMessagesList(messageList);
   };
 
   useEffect(() => {
-    console.log("Ran in here");
     const chatInfo = {
       chatId: currentChatInfo.chat_id,
       userId: token,
@@ -59,7 +59,7 @@ function MessageList({ currentChatInfo }) {
 
   const checkMessageList = (message) => {
     if (message.length < 1) {
-      console.log(messages);
+      console.log(message);
       console.log("no messages");
       return (
         <p className="text-white text-center">
@@ -158,7 +158,7 @@ function MessageList({ currentChatInfo }) {
     if (typeof message === "string") {
       return message;
     } else {
-      return <img src={message.filename} alt="Image" />;
+      return <img src={message.filename} alt={message.filename} />;
     }
   };
 
