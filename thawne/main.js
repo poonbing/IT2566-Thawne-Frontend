@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, Notification } = require('electron');
+const { app, BrowserWindow, ipcMain, Notification, dialog } = require('electron');
 const path = require('path');
  
 const isDev = process.env.IS_DEV == "true" ? true : false;
@@ -20,14 +20,7 @@ function createWindow() {
     },
   });
 
-  ipcMain.on('set-title', (event, title) => {
-      new Notification({ 
-        title: title, 
-        body: title ,
-        icon: path.join(__dirname, 'public', 'icons', 'icon.ico'),
-        silent : false,
-      }).show()
-  })
+
 
 
   mainWindow.setContentProtection(true);
@@ -43,6 +36,24 @@ function createWindow() {
       : `file://${path.join(__dirname, '../dist/index.html')}`
   );
 
+  ipcMain.on('show-dialog', (event) => {
+    dialog.showMessageBox({
+        type: 'question',
+        buttons: ['Yes', 'No'],
+        title: 'Leave Page?',
+        message: 'Should I leave this page?'
+    }).then((result) => {
+        if (result.response === 0) {
+            mainWindow.loadFile('public/redirectpage.html');
+        } else {
+            mainWindow.webContents.send('dialog-closed');
+        }
+    }).catch((err) => {
+        console.error(err);
+    });
+});
+
+
 }
 
 if (process.platform === 'win32')
@@ -55,7 +66,10 @@ app.setUserTasks([
 ])
 
 app.whenReady().then(() => {
+
   createWindow()
+
+  
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })

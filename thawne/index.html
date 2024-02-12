@@ -7,7 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-    <!-- <script async src="js/opencv.js" onload="openCvReady();"></script> -->
+    <script async src="js/opencv.js" onload="openCvReady();"></script>
     <script src="js/utils.js"></script>
     <script src="/path/to/flash.min.js"></script>
   </head>
@@ -16,25 +16,29 @@
     </div>
     <div className="bg-white">
       <video id="cam_input" hidden height="240" width="320"></video>
-      <canvas id="canvas_output" hidden ></canvas>
-      <h1 id="statusText" hidden ></h1>
+      <canvas id="canvas_output"  ></canvas>
+      <h1 id="statusText"  ></h1>
     </div>
 
     <script type="module" src="src/main.jsx"></script>
-     <script type="text/JavaScript">
+    <script type="text/JavaScript">
+
+      let dialogShown = false;
+      
       function openCvReady() {
+
+        
+
         cv['onRuntimeInitialized']=()=>{
           let video = document.getElementById("cam_input"); // video is the id of video tag
           navigator.mediaDevices.getUserMedia({ video: true, audio: false })
           .then(function(stream) {
               video.srcObject = stream;
               video.play();
-              console.log('camera is on')
           })
           .catch(function(err) {
               console.log("An error occurred! " + err);
           });
-          console.log('camera is off')
           let src = new cv.Mat(video.height, video.width, cv.CV_8UC4);
           let dst = new cv.Mat(video.height, video.width, cv.CV_8UC1);
           let gray = new cv.Mat();
@@ -47,11 +51,43 @@
           classifier.load(faceCascadeFile); // in the callback, load the cascade from file
       });
           const FPS = 24;
-  
+
           let lastCountOfMoreThanOneFace = 0
-  
+
+          let safe_mode = true;
+
+          let current_time = Date.now()
+          let element = document.getElementById('canvas_output');
+          //if (safe_mode == true){
+            //element.style.border = '10px solid lightgreen';
+          //}
+
+          function showDialog() {
+            if (!dialogShown) {
+                electron.showDialog();
+                dialogShown = true;
+            }
+           }
+
           function processVideo() {
               let begin = Date.now();
+              if (safe_mode == false) {
+                element.style.border = '10px solid red';
+                console.log(current_time)
+                //console.log("entered");
+                if (Date.now()-current_time > 30000) {
+                  console.log("Time is ",Date.now());
+
+                  safe_mode = true;
+
+
+                }
+              }
+              else{
+                element.style.border = '10px solid lightgreen';
+              }
+
+              //console.log(begin);
               cap.read(src);
               src.copyTo(dst);
               cv.cvtColor(dst, gray, cv.COLOR_RGBA2GRAY, 0);
@@ -62,25 +98,25 @@
               }catch(err){
                   console.log(err);
               }
-  
+
               let statusText = document.getElementById("statusText");
               if (faces.size() > 1) {
                   lastCountOfMoreThanOneFace = lastCountOfMoreThanOneFace + 1
-  
+
               } else {
                   lastCountOfMoreThanOneFace = 0
               }
-  
-              if (lastCountOfMoreThanOneFace > 12) {
-                  window.electronAPI.setTitle("Multiple faces")
-                  window.location.replace("redirectpage.html")
-                  statusText.innerHTML = 'WARNING!'
+
+              if (lastCountOfMoreThanOneFace > 12 && safe_mode === true) {
+                statusText.innerHTML = 'Fuck off!'
+                showDialog()
+
               }
               else {
-                  statusText.innerHTML = 'OK!'
+                  statusText.innerHTML = 'I love you!'
               }
-  
-  
+
+
               for (let i = 0; i < faces.size(); ++i) {
                   let face = faces.get(i);
                   let point1 = new cv.Point(face.x, face.y);
@@ -96,7 +132,7 @@
       setTimeout(processVideo, 0);
         };
       }
-    </script>
+</script>
 
   </body>
 </html>
