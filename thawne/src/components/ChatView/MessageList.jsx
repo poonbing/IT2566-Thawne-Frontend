@@ -4,18 +4,15 @@ import extractFirstKey from "../../helpers/extractFirstKey";
 import { socket } from "../../socket";
 
 function MessageList({ currentChatInfo }) {
-  console.log(currentChatInfo);
   const [messagesList, setMessagesList] = useState([]);
 
   const handleChatMessage = (messages) => {
     const messageList = messages ? Object.values(messages) : [];
-    console.log("The message list", messageList);
     checkMessageList(messageList); 
     setMessagesList(messageList);
   };
 
   useEffect(() => {
-    console.log("Ran in here");
     const chatInfo = {
       chatId: currentChatInfo.chat_id,
       userId: token,
@@ -26,7 +23,6 @@ function MessageList({ currentChatInfo }) {
     socket.emit("get_message_list", chatInfo);
 
     const handleMessageReturn = (data) => {
-      console.log("The data is ", data);
       handleChatMessage(data);
     };
 
@@ -41,7 +37,7 @@ function MessageList({ currentChatInfo }) {
       socket.off("return_message_list", handleMessageReturn);
       socket.off("error_message_list", handleErrorMessage);
     };
-  }, []);
+  }, [currentChatInfo]);
 
   const weekday = [
     "Sunday",
@@ -59,8 +55,6 @@ function MessageList({ currentChatInfo }) {
 
   const checkMessageList = (message) => {
     if (message.length < 1) {
-      console.log(messages);
-      console.log("no messages");
       return (
         <p className="text-white text-center">
           Chat does not have any messages yet.
@@ -154,7 +148,6 @@ function MessageList({ currentChatInfo }) {
   };
 
   const checkMessageType = (message) => {
-    console.log(message);
     if (typeof message === "string") {
       return message;
     } else {

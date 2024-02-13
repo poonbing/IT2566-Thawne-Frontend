@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useToken from "../hooks/useToken";
 import useUserPassword from "../hooks/useUserPassword";
 import socketIOClient from "socket.io-client";
@@ -33,7 +33,7 @@ function ChatPage({
   const handlePasswordSubmit = async (password) => {
     
       return new Promise((resolve, reject) => {
-        const socket = socketIOClient("http://localhost:5000/auth");
+        const socket = socketIOClient("https://thawne-backend-7skvo7hmpa-uc.a.run.app");
         socket.emit("verify_chat_user", {
           uid: token,
           cid: chatList[verifyChatModalIndex].chat_id,
@@ -72,6 +72,9 @@ function ChatPage({
         });
       });
   };
+
+  useEffect(() => {
+  }, [currentChatInfo]);
 
   return (
     <>

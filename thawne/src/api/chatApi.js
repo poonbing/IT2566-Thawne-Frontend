@@ -7,7 +7,7 @@ async function reflectAllChats(userId, password) {
 
   return new Promise((resolve, reject) => {
     try {
-      const socket = socketIOClient('http://localhost:5000/chat');
+      const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
       const chatData = {
         userId: userId,
         password: password,
@@ -30,7 +30,7 @@ async function reflectAllChats(userId, password) {
 
 async function createChat(chatValues) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000/operation');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
     socket.emit('create_chat', chatValues);
     socket.on('return_chat_creation', (data) => {
       socket.disconnect();
@@ -48,7 +48,7 @@ async function createChat(chatValues) {
 
 async function deleteChat(chatValues) {
   return new Promise((resolve) => {
-    const socket = socketIOClient('http://localhost:5000/operation');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
     socket.emit('delete_chat', chatValues);
     const data = "Pending chat deletion request...";
     resolve(data);
@@ -58,7 +58,7 @@ async function deleteChat(chatValues) {
 
 async function submitMessage(content) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000/chat');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
     socket.emit('submit_message', content);
     socket.on('return_message_submission', (data) => {
       console.log(data)
@@ -74,7 +74,7 @@ async function submitMessage(content) {
 
 async function getMessageList(currentChat) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000/chat');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
     socket.emit('get_message_list', currentChat);
     socket.on('return_message_list', (data) => {
       resolve(data);
@@ -87,7 +87,7 @@ async function getMessageList(currentChat) {
 
 async function checkFileName(file) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
     socket.emit('check_filename', file);
     socket.on('return_filename_check', (data) => {
       resolve(data);
@@ -101,7 +101,7 @@ async function checkFileName(file) {
 
 async function fileScan(file) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000/filescan');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
     socket.emit('on_queue_file', file);
     socket.on('return_filename_check', (data) => {
       socket.disconnect();
@@ -121,7 +121,7 @@ async function fileScan(file) {
 
 async function fileUpload(file) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('http://localhost:5000/chat');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app');
     socket.emit('file_upload', file);
     socket.on('return_filename_check', (data) => {
       resolve(data); 
@@ -132,10 +132,14 @@ async function fileUpload(file) {
     socket.on('return_file_upload', (message) => {
       alert(` Signed URL. \n Details: ${message.url}`)
       console.log(message.url)
+      let encryptedFile = file.file
+      if (file.fileSecurity == 'Sensitive'){
+        encryptedFile = encryptData(file.file, file.chatId)
+      }
       const uploadResponse = fetch(message.url, {
         mode: 'cors',
         method: 'PUT',
-        body: file.file,
+        body: encryptedFile,
         headers: {
           'Access-Control-Allow-Origin': '*'
         }
