@@ -17,7 +17,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
   const [maskSensitiveList, setMaskSensitiveList] = useState([]);
   const [editedvalues, setEditedValues] = useState(null);
   const [confirm, setConfirm] = useState(false);
-  const fileInputRef = useRef(null);
+  const fileInputRef = useRef(null); 
   const [fileSecurity, setFileSecurity] = useState("Open");
   const [selectedImage, setSelectedImage] = useState(null);
   const [textResult, setTextResult] = useState("");
@@ -207,6 +207,11 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
         {({ setFieldValue, errors, values }) => (
           <Form>
             {values.file && <PreviewImage file={values.file} />}
+            {textResult && (
+              <div className="text-center text-white text-2xl">
+                <p>{textResult}</p>
+              </div>
+            )}
             
             <div className="flex items-center justify-between w-full p-3 border-t border-black">
               <button
@@ -234,7 +239,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
                   setIsFileUploaded(true);
                   setSelectedImage(e.target.files[0]);
                 }}
-                ref={fileInputRef}
+                ref={fileInputRef} 
                 hidden
                 disabled={values.message.trim() !== ""}
               />

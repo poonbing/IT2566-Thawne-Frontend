@@ -8,7 +8,6 @@ async function reflectAllChats(userId, password) {
   return new Promise((resolve, reject) => {
     try {
       const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/chat');
-      const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/chat');
       const chatData = {
         userId: userId,
         password: password,
@@ -144,7 +143,7 @@ async function fileUpload(file) {
       }
     });
     socket.on('inappropriate_level', (error) => {
-      alert(` File upload is not allowed. \n Granted security level: ${error}`)
+      console.log(` File upload is not allowed. \n Granted security level: ${error}`)
     });
   });
 }
