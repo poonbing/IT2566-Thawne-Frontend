@@ -207,12 +207,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
         {({ setFieldValue, errors, values }) => (
           <Form>
             {values.file && <PreviewImage file={values.file} />}
-            {textResult && (
-              <div className="text-center text-white text-2xl">
-                <p>{textResult}</p>
-              </div>
-            )}
-
+            
             <div className="flex items-center justify-between w-full p-3 border-t border-black">
               <button
                 type="button"
