@@ -93,7 +93,6 @@ function ChatPage({
             setLoading={setLoading}
             unlock={unlock}
           />
-          {/* <OpenCVComponent /> */}
         </div>
         <div className="container w-screen relative">
           <ChatView

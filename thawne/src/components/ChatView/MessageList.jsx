@@ -2,13 +2,15 @@ import React, { useState, useEffect } from "react";
 import useToken from "../../hooks/useToken";
 import extractFirstKey from "../../helpers/extractFirstKey";
 import { socket } from "../../socket";
+import { Link } from "react-router-dom";
 
 function MessageList({ currentChatInfo }) {
   const [messagesList, setMessagesList] = useState([]);
 
   const handleChatMessage = (messages) => {
     const messageList = messages ? Object.values(messages) : [];
-    checkMessageList(messageList); 
+    console.log("The message list", messageList);
+    checkMessageList(messageList);
     setMessagesList(messageList);
   };
 
@@ -55,6 +57,8 @@ function MessageList({ currentChatInfo }) {
 
   const checkMessageList = (message) => {
     if (message.length < 1) {
+      console.log(message);
+      console.log("no messages");
       return (
         <p className="text-white text-center">
           Chat does not have any messages yet.
@@ -151,7 +155,7 @@ function MessageList({ currentChatInfo }) {
     if (typeof message === "string") {
       return message;
     } else {
-      return <img src={message.filename} alt="Image" />;
+      return <img src={message.filename} alt={message.filename} />;
     }
   };
 
