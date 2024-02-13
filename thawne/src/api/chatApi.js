@@ -8,6 +8,7 @@ async function reflectAllChats(userId, password) {
   return new Promise((resolve, reject) => {
     try {
       const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/chat');
+      const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/chat');
       const chatData = {
         userId: userId,
         password: password,
@@ -93,7 +94,7 @@ async function checkFileName(file) {
 
 async function fileScan(file) {
   return new Promise((resolve, reject) => {
-    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/filescan');
+    const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/chat');
     socket.emit('on_queue_file', file);
     socket.on('return_filename_check', (data) => {
       socket.disconnect();
