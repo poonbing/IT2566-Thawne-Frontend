@@ -152,10 +152,11 @@ function MessageList({ currentChatInfo }) {
   };
 
   const checkMessageType = (message) => {
+    console.log(message);
     if (typeof message === "string") {
       return message;
     } else {
-      return <img src={message.filename} alt={message.filename} />;
+      return <img src={message.url} alt={message.filename} />;
     }
   };
 
