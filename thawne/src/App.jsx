@@ -81,14 +81,7 @@ function App() {
                       </>
                     }
                   />
-                  <Route
-                    path="/pdf"
-                    element={
-                      <>
-                        <PDFViewPage />
-                      </>
-                    }
-                  />
+                  <Route path="/pdf" element={<PDFViewPage />} />
                   <Route
                     path="/settings/profile"
                     element={

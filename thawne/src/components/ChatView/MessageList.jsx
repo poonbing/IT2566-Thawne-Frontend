@@ -156,7 +156,20 @@ function MessageList({ currentChatInfo }) {
     if (typeof message === "string") {
       return message;
     } else {
-      return <img src={message.url} alt={message.filename} />;
+      if (message.filename.toLowerCase().endsWith(".pdf")) {
+        return (
+          <Link to={{ pathname: "/pdf" }} state={{ url: message.url }}>
+            <img
+              src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/PDF_file_icon.svg/1200px-PDF_file_icon.svg.png"
+              alt={message.filename}
+              width={50}
+              height={50}
+            />
+            {message.filename}
+          </Link>
+        );
+      }
+      return <img src={message.filename} alt={message.filename} />;
     }
   };
 
