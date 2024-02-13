@@ -169,7 +169,7 @@ function MessageList({ currentChatInfo }) {
           </Link>
         );
       }
-      return <img src={message.filename} alt={message.filename} />;
+      return <img src={message.url} alt={message.url} />;
     }
   };
 
