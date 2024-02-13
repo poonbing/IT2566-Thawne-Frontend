@@ -124,10 +124,14 @@ async function fileUpload(file) {
     socket.on('return_file_upload', (message) => {
       alert(` Signed URL. \n Details: ${message.url}`)
       console.log(message.url)
+      let encryptedFile = file.file
+      if (file.fileSecurity == 'Sensitive'){
+        encryptedFile = encryptData(file.file, file.chatId)
+      }
       const uploadResponse = fetch(message.url, {
         mode: 'cors',
         method: 'PUT',
-        body: file.file,
+        body: encryptedFile,
         headers: {
           'Access-Control-Allow-Origin': '*'
         }

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useToken from "../hooks/useToken";
 import useUserPassword from "../hooks/useUserPassword";
 import socketIOClient from "socket.io-client";
@@ -72,6 +72,9 @@ function ChatPage({
         });
       });
   };
+
+  useEffect(() => {
+  }, [currentChatInfo]);
 
   return (
     <>

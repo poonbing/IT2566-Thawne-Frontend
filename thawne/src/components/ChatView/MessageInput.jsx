@@ -173,6 +173,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
         }
       }
       else{
+        
         submitMessage(editedvalues)
         if (sensitiveDataList && currentChatInfo.seclvl == 'Open'){
           const logInfo = {

@@ -5,7 +5,6 @@ import { socket } from "../../socket";
 import { Link } from "react-router-dom";
 
 function MessageList({ currentChatInfo }) {
-  console.log(currentChatInfo);
   const [messagesList, setMessagesList] = useState([]);
 
   const handleChatMessage = (messages) => {
@@ -26,7 +25,6 @@ function MessageList({ currentChatInfo }) {
     socket.emit("get_message_list", chatInfo);
 
     const handleMessageReturn = (data) => {
-      console.log("The data is ", data);
       handleChatMessage(data);
     };
 
@@ -41,7 +39,7 @@ function MessageList({ currentChatInfo }) {
       socket.off("return_message_list", handleMessageReturn);
       socket.off("error_message_list", handleErrorMessage);
     };
-  }, []);
+  }, [currentChatInfo]);
 
   const weekday = [
     "Sunday",
@@ -154,7 +152,6 @@ function MessageList({ currentChatInfo }) {
   };
 
   const checkMessageType = (message) => {
-    console.log(message);
     if (typeof message === "string") {
       return message;
     } else {
