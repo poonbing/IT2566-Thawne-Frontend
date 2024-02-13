@@ -143,7 +143,7 @@ async function fileUpload(file) {
       }
     });
     socket.on('inappropriate_level', (error) => {
-      alert(` File upload is not allowed. \n Granted security level: ${error}`)
+      console.log(` File upload is not allowed. \n Granted security level: ${error}`)
     });
   });
 }
