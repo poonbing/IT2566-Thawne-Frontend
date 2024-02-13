@@ -8,7 +8,6 @@ async function reflectAllChats(userId, password) {
   return new Promise((resolve, reject) => {
     try {
       const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/chat');
-      const socket = socketIOClient('https://thawne-backend-7skvo7hmpa-uc.a.run.app/chat');
       const chatData = {
         userId: userId,
         password: password,
