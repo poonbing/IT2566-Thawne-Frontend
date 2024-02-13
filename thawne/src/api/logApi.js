@@ -4,7 +4,7 @@ async function logEvent(logInfo) {
   
     return new Promise((resolve, reject) => {
       try {
-        const socket = socketIOClient('http://localhost:5000/log');
+        const socket = socketIOClient('hhttps://thawne-backend-7skvo7hmpa-uc.a.run.app/log');
     
         socket.emit('log_event', logInfo);
         socket.on('return_log_event', (data) => {
