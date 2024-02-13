@@ -1,32 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Document, Page, pdfjs } from "react-pdf";
-import { useLocation } from "react-router-dom";
+import PDF from "../assets/pdf.pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
-const PDFViewPage = () => {
+const PDFViewPage = ({ pdf }) => {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [url, setUrl] = useState(null);
-  const location = useLocation();
-  const pdfUrl = location.state?.url;
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(pdfUrl);
-        const blob = await response.blob();
-        const blobUrl = URL.createObjectURL(blob);
-        setUrl(blobUrl);
-      } catch (error) {
-        console.error("Error fetching PDF:", error);
-      }
-    };
-
-    if (pdfUrl) {
-      fetchData();
-    }
-  }, [pdfUrl]);
 
   const onDocumentLoadSuccess = ({ numPages }) => {
     setNumPages(numPages);
@@ -55,17 +35,15 @@ const PDFViewPage = () => {
         </button>
       </div>
 
-      {url && (
-        <Document
-          file={url}
-          onLoadSuccess={onDocumentLoadSuccess}
-          onContextMenu={(e) => e.preventDefault()}
-          size="A4"
-          className="pdf-container"
-        >
-          <Page pageNumber={pageNumber} />
-        </Document>
-      )}
+      <Document
+        file={PDF}
+        onLoadSuccess={onDocumentLoadSuccess}
+        onContextMenu={(e) => e.preventDefault()}
+        size="A4"
+        className="pdf-container"
+      >
+        <Page pageNumber={pageNumber} />
+      </Document>
     </div>
   );
 };
