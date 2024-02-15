@@ -80,6 +80,7 @@ function ChatView({ selectedChat, currentChatInfo, userPassword }) {
         <ChatDetails
           currentChatInfo={currentChatInfo}
           userPassword={userPassword}
+          setDetailsOpen={setDetailsOpen}
           onClose={() => setDetailsOpen(false)}
         />
       )}

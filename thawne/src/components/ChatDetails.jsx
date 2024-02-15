@@ -3,7 +3,7 @@ import FileCarousel from "./ChatView/FileCarousel";
 import { deleteChat } from "../api/chatApi";
 import useToken from "../hooks/useToken";
 
-function ChatDetails({ currentChatInfo, onClose, userPassword }) {
+function ChatDetails({ currentChatInfo, onClose, userPassword, setDetailsOpen }) {
   const { token } = useToken();
   
   console.log(currentChatInfo)
@@ -14,6 +14,7 @@ function ChatDetails({ currentChatInfo, onClose, userPassword }) {
       userPassword: userPassword.password,
     };
     deleteChat(values);
+    setDetailsOpen(false);
   };
 
   const checkSecurity = (level) => {
