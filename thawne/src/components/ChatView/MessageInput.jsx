@@ -164,11 +164,10 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
           const logInfo = {
             userId: currentChatInfo.userId,
             password: userPassword.password,
-            type: 'Message.',
-            location: 'Open channel.',
+            type: 'File upload.',
+            location: 'Open channel, ' + currentChatInfo.chat_id + ', ' + currentChatInfo.chat_name,
             context: "Sensitive data sent by image file."
           }
-          console.log(logInfo)
           logEvent(logInfo)
         }
       }
@@ -180,10 +179,9 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
             userId: currentChatInfo.userId,
             password: userPassword.password,
             type: 'Message.',
-            location: 'Open channel, ' + currentChatInfo.chatId + ', ' + currentChatInfo.chat_name,
+            location: 'Open channel, ' + currentChatInfo.chat_id + ', ' + currentChatInfo.chat_name,
             context: "Sensitive data sent."
           }
-          console.log(logInfo)
           logEvent(logInfo)
         }
         
