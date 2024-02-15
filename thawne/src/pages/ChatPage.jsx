@@ -33,7 +33,7 @@ function ChatPage({
   const handlePasswordSubmit = async (password) => {
     
       return new Promise((resolve, reject) => {
-        const socket = socketIOClient("https://thawne-backend-7skvo7hmpa-uc.a.run.app/auth");
+        const socket = socketIOClient("http://localhost:5000/auth");
         socket.emit("verify_chat_user", {
           uid: token,
           cid: chatList[verifyChatModalIndex].chat_id,
@@ -54,7 +54,6 @@ function ChatPage({
             seclvl: chatList[verifyChatModalIndex].security_level,
             pass: password,
           });
-          window.FlashMessage.success('Chat user authenticated.')
           resolve(data);
         });
         socket.on("error_chat_user", (error) => {
@@ -64,9 +63,10 @@ function ChatPage({
             userId: token,
             password: userPassword.password,
             type: "Chat login",
-            location: chatList[verifyChatModalIndex].security_level + ' Channel',
+            location: chatList[verifyChatModalIndex].security_level + ' Channel, ' + chatList[verifyChatModalIndex].chat_id + ', ' + chatList[verifyChatModalIndex].chat_name,
             context: 'Failed login attempt'
           }
+          console.log(logInfo)
           logEvent(logInfo)
           reject(error);
         });
