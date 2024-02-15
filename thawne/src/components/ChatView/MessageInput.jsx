@@ -180,7 +180,7 @@ function MessageInput({ currentChatInfo, setIsFileUploaded, userPassword }) {
             userId: currentChatInfo.userId,
             password: userPassword.password,
             type: 'Message.',
-            location: 'Open channel.',
+            location: 'Open channel, ' + currentChatInfo.chatId + ', ' + currentChatInfo.chat_name,
             context: "Sensitive data sent."
           }
           console.log(logInfo)

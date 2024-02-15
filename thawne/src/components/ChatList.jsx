@@ -52,6 +52,7 @@ function ChatList({
         userId: token,
         seclvl: securityLevel,
         pass: false,
+        chat_name: selectedChat.chat_name
       });
     }
   };

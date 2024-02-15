@@ -9,6 +9,7 @@ function ChatView({ selectedChat, currentChatInfo, userPassword }) {
   const { token } = useToken();
   const [isFileUploaded, setIsFileUploaded] = useState(false);
   const [messagePresent, setMessagePresent] = useState(null);
+  
 
   const checkSecurity = (level) => {
     if (level === "Top Secret") {
