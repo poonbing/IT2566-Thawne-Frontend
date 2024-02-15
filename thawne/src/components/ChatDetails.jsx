@@ -3,15 +3,16 @@ import FileCarousel from "./ChatView/FileCarousel";
 import { deleteChat } from "../api/chatApi";
 import useToken from "../hooks/useToken";
 
-function ChatDetails({ selectedChat, onClose, userPassword }) {
+function ChatDetails({ currentChatInfo, onClose, userPassword }) {
   const { token } = useToken();
-  const values = {
-    userId: token || "",
-    chatId: selectedChat.chat_id || "",
-    userPassword: userPassword.password,
-  };
-
+  
+  console.log(currentChatInfo)
   const handleChatDelete = () => {
+    const values = {
+      userId: token ,
+      chatId: currentChatInfo.chat_id,
+      userPassword: userPassword.password,
+    };
     deleteChat(values);
   };
 
@@ -69,10 +70,10 @@ function ChatDetails({ selectedChat, onClose, userPassword }) {
             <div class="mt-4 flex items-center sm:justify-end">
               <div class="flex flex-col gap-3 text-white italic">
                 <span className="mt-3 relative inline-flex cursor-pointer items-center">
-                  {selectedChat.chat_id}
+                  {currentChatInfo.chat_id}
                 </span>
                 <span className="mt-3 text-xs  text-white font-semibold p-1 rounded-md">
-                  {checkSecurity(selectedChat.security_level)}
+                  {checkSecurity(currentChatInfo.security_level)}
                 </span>
               </div>
             </div>
@@ -83,7 +84,7 @@ function ChatDetails({ selectedChat, onClose, userPassword }) {
           <div className="overflow-y-auto text-white p-4">
             <div className="flex items-center">
               <p className="mb-2">
-                Chat Description: {selectedChat.description}
+                Chat Description: {currentChatInfo.description}
               </p>
               <button className="ml-auto text-white">
                 <ion-icon name="create-outline"></ion-icon>
