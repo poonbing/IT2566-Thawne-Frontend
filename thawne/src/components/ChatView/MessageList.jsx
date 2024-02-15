@@ -180,7 +180,7 @@ function MessageList({ currentChatInfo }) {
         backgroundImage: `url("/images/chatWallpaper.jpg")`,
       }}
     >
-      {messagesList.length > 0 && (
+      {messagesList.length > 0 ? (
         <>
           <ul className="space-y-2">
             {messagesList.map((message, index) => (
@@ -226,7 +226,14 @@ function MessageList({ currentChatInfo }) {
             ))}
           </ul>
         </>
-      )}
+      ) : 
+        <div className="flex justify-center mb-2">
+          <div className="bg-white text-gray-800 text-xl px-4 py-2 rounded-full italic">
+            Chat does not have any messages yet.
+          </div>
+        </div>
+                        
+      }
     </div>
   );
 }
