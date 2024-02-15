@@ -5,6 +5,7 @@ import ChatDetails from "./ChatDetails";
 import useToken from "../hooks/useToken";
 
 function ChatView({ selectedChat, currentChatInfo, userPassword }) {
+  
   const [isDetailsOpen, setDetailsOpen] = useState(false);
   const { token } = useToken();
   const [isFileUploaded, setIsFileUploaded] = useState(false);
@@ -77,7 +78,7 @@ function ChatView({ selectedChat, currentChatInfo, userPassword }) {
 
       {isDetailsOpen && (
         <ChatDetails
-          selectedChat={currentChatInfo}
+          currentChatInfo={currentChatInfo}
           userPassword={userPassword}
           onClose={() => setDetailsOpen(false)}
         />
